@@ -1,0 +1,19 @@
+{
+  "app": {
+    "teszt": "teszt",
+    "validation": {
+      "email": "Incorrect E-mail format",
+      "required": "{_field_} can not be empty",
+      "password_match": "Password confirmation does not match",
+      "min": "{_field_} must be at least {length} characters long"
+    },
+    "login": {
+      "title": "Login",
+      "form": {
+        "email": "E-mail",
+        "password": "Password",
+        "button_title": "Login"
+      }
+    }
+  }
+}
