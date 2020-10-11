@@ -1,5 +1,5 @@
 import { extend } from 'vee-validate';
-import { required, email, min, regex } from 'vee-validate/dist/rules';
+import { required, email, min, regex, max } from 'vee-validate/dist/rules';
 
 export default function ({ app }) {
   const i18n = app.i18n;
@@ -25,6 +25,11 @@ export default function ({ app }) {
   extend('min', {
     ...min,
     message: i18n.t('app.validation.min')
+  });
+
+  extend('max', {
+    ...max,
+    message: i18n.t('app.validation.max')
   });
 
   extend('regex', {

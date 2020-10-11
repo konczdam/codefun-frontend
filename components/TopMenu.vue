@@ -18,6 +18,7 @@
           <v-btn
             :key="item"
             text
+            @click="navigate(item)"
           >
             {{ item }}
           </v-btn>
@@ -32,7 +33,7 @@
             text
             @click="navigate(item)"
           >
-            {{ item }}
+            {{ item === 'user' ? userName : item }}
           </v-btn>
         </template>
       </v-toolbar-items>
@@ -53,7 +54,9 @@ export default {
         ],
         right: [
           'login',
-          'register'
+          'register',
+          'user',
+          'logout',
         ]
       }
     };
@@ -61,19 +64,32 @@ export default {
   computed: {
     userLoggedIn () {
       return this.$auth.loggedIn;
-    }
+    },
+    userName () {
+      return this.$auth.$storage.getUniversal('user').username;
+    },
   },
   methods: {
     navigate (item) {
-      this.$router.push({ name: item });
+      if (item === 'logout') {
+        this.$auth.logout();
+        this.$auth.$storage.removeUniversal('user');
+        this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_logout'), color: 'success' });
+        this.$router.push({ name: 'login' });
+      } else {
+        this.$router.push({ name: item });
+      }
     },
     visible (item) {
       switch (item) {
       case 'login':
       case 'register':
         return !this.userLoggedIn;
+      case 'logout':
+      case 'user':
+        return this.userLoggedIn;
       }
-    }
+    },
   },
 };
 </script>

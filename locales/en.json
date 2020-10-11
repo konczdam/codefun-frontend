@@ -5,7 +5,8 @@
       "email": "Incorrect E-mail format",
       "required": "{_field_} can not be empty",
       "password_match": "Password confirmation does not match",
-      "min": "{_field_} must be at least {length} characters long"
+      "min": "{_field_} must be at least {length} characters long",
+      "max": "{_field_} can not be longer than {length} characters"
     },
     "login": {
       "title": "Login",
@@ -14,6 +15,27 @@
         "password": "Password",
         "button_title": "Login"
       }
+    },
+    "registration": {
+      "title": "Registration",
+      "form": {
+        "email": "E-mail",
+        "password": "Password",
+        "confirm_password": "Confirm password",
+        "password_hint": "At least 6 characters",
+        "button_title": "Register",
+        "username": "Username",
+        "username_hint": "The name other players will see when you play with them",
+        "preferred_languages": "Preferred languages",
+        "preferred_languages_hint": "The programming languages you want to use to solve problems. Can be changed later."
+      }
+    },
+    "snackbar": {
+      "successful_registration": "Successful registration",
+      "successful_login": "Successful login",
+      "unsuccessful_login": "Unsuccessful login, try again!",
+      "successful_logout": "Successful logout",
+      "unexpected": "Unexpected error"
     }
   }
 }

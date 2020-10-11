@@ -82,20 +82,18 @@ export default {
           const response = await this.$auth.loginWith('local', { data: this.login });
           this.$nuxt.$loading.finish();
           if (response.status === StatusCodes.OK) {
-            this.$notifier.showMessage({ content: 'sikerült belépni', color: 'success' });
+            this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_login'), color: 'success' });
             this.$auth.setUser(response.data);
+            this.$auth.$storage.setUniversal('user', response.data, true);
+            this.$router.push({ name: 'alma' });
           } else {
-            this.$notifier.showMessage({ content: 'nem sikerült belépni: ' + getReasonPhrase(response.status), color: 'error' });
+            this.$notifier.showMessage({ content: this.$t('app.snackbar.unsuccessful_login') + getReasonPhrase(response.status), color: 'error' });
           }
         } catch (err) {
-          this.$notifier.showMessage({ content: 'unexpected error!', color: 'error' });
+          this.$notifier.showMessage({ content: this.$t('app.snackbar.unexpected'), color: 'error' });
         }
       }
     }
   },
 };
 </script>
-
-<style scoped>
-
-</style>
