@@ -44,13 +44,14 @@
 <script>
 export default {
   name: 'TopMenu',
-  data () {
+  data() {
     return {
       drawer: false,
       menu: {
         left: [
           'alma',
           'körte',
+          'compete'
         ],
         right: [
           'login',
@@ -62,15 +63,18 @@ export default {
     };
   },
   computed: {
-    userLoggedIn () {
+    userLoggedIn() {
       return this.$auth.loggedIn;
     },
-    userName () {
+    userName() {
+      if (!this.userLoggedIn) {
+        return null;
+      }
       return this.$auth.$storage.getUniversal('user').username;
     },
   },
   methods: {
-    navigate (item) {
+    navigate(item) {
       if (item === 'logout') {
         this.$auth.logout();
         this.$auth.$storage.removeUniversal('user');
@@ -80,7 +84,7 @@ export default {
         this.$router.push({ name: item });
       }
     },
-    visible (item) {
+    visible(item) {
       switch (item) {
       case 'login':
       case 'register':

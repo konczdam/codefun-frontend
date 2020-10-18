@@ -48,6 +48,14 @@ export default {
     '@nuxtjs/auth',
   ],
 
+  io: {
+    // module options
+    sockets: [{
+      name: 'main',
+      url: 'http://localhost:8080/api/ws'
+    }]
+  },
+
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
     baseURL: 'http://localhost:8080/api'

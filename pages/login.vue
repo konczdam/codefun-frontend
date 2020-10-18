@@ -64,7 +64,7 @@ export default {
     ValidationProvider,
     ValidationObserver,
   },
-  data () {
+  data() {
     return {
       isFormValid: false,
       showPw: false,
@@ -75,7 +75,7 @@ export default {
     };
   },
   methods: {
-    async userLogin () {
+    async userLogin() {
       if (this.isFormValid === true) {
         try {
           this.$nuxt.$loading.start();
@@ -85,7 +85,8 @@ export default {
             this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_login'), color: 'success' });
             this.$auth.setUser(response.data);
             this.$auth.$storage.setUniversal('user', response.data, true);
-            this.$router.push({ name: 'alma' });
+            // this.$router.push({ name: 'alma' });
+            this.$router.push({ name: 'compete' });
           } else {
             this.$notifier.showMessage({ content: this.$t('app.snackbar.unsuccessful_login') + getReasonPhrase(response.status), color: 'error' });
           }

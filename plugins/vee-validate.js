@@ -1,7 +1,7 @@
 import { extend } from 'vee-validate';
 import { required, email, min, regex, max } from 'vee-validate/dist/rules';
 
-export default function ({ app }) {
+export default function({ app }) {
   const i18n = app.i18n;
 
   extend('required', {
@@ -16,7 +16,7 @@ export default function ({ app }) {
 
   extend('password', {
     params: ['target'],
-    validate (value, { target }) {
+    validate(value, { target }) {
       return value === target;
     },
     message: i18n.t('app.validation.password_match')

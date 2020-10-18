@@ -22,7 +22,7 @@ export default {
     TopMenu,
     Snackbar,
   },
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: false,

@@ -17,6 +17,7 @@ module.exports = {
   rules: {
     indent: ['error', 2],
     'comma-dangle': 'off',
+    'space-before-function-paren': ['error', 'never'],
     semi: ['error', 'always'],
     'vue/html-indent': ['error', 2, {
       attribute: 1,

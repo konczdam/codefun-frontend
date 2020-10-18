@@ -115,7 +115,7 @@ export default {
     ValidationProvider,
     ValidationObserver,
   },
-  data () {
+  data() {
     return {
       isFormValid: false,
       showPw: false,
@@ -131,7 +131,7 @@ export default {
     };
   },
   methods: {
-    async userRegister () {
+    async userRegister() {
       await this.$refs.observer.validate();
 
       if (this.isFormValid === true) {

@@ -18,8 +18,10 @@
     "http-status-codes": "^2.1.4",
     "nuxt": "^2.14.5",
     "nuxt-i18n": "^6.9.1",
+    "sockjs-client": "^1.5.0",
     "vee-validate": "^3.2.5",
-    "vue-codemirror": "^4.0.6"
+    "vue-codemirror": "^4.0.6",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.1.0",
