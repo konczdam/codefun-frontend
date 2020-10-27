@@ -1,5 +1,6 @@
 export const state = () => ({
   roomList: [],
+  usersInRoom: [],
 });
 
 export const getters = {
@@ -10,7 +11,10 @@ export const mutations = {
   initRoomList(state, roomList) {
     state.roomList = roomList;
   },
-  addRoom(stete, room) {
+  addRoom(state, room) {
     state.roomList.push(room);
+  },
+  updateRoom(state, { roomId, others }) {
+    state.roomList.find(it => it.owner.id === roomId).others = others;
   }
 };

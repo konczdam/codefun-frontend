@@ -17,7 +17,7 @@ export const mutations = {
 };
 
 export const actions = {
-  connect({ rootState, state, commit }) {
+  connect({ state, commit }) {
     if (state.connected) {
       return;
     }
@@ -29,16 +29,64 @@ export const actions = {
     // this.stompClient.debug = (message) => {};
 
     this.stompClient.connect(
-      { Authorization: this.$auth.loggedIn },
+      { },
       (frame) => {
         commit('setConnected', true);
         this.stompClient.subscribe('/app/rooms', (tick) => {
           const roomList = JSON.parse(tick.body);
           commit('main/initRoomList', roomList, { root: true });
+        },
+        {
+          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
         });
+        this.stompClient.subscribe('/topic/rooms/newRoom', (message) => {
+          const newRoom = JSON.parse(message.body);
+          commit('main/addRoom', newRoom, { root: true });
+          if (newRoom.owner.id === this.$auth.$storage.getUniversal('user').id) {
+            this.$router.push({ name: 'alma' });
+          }
+        },
+        {
+          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+        });
+
+        this.stompClient.subscribe('/topic/rooms/updateRoom', (message) => {
+          const people = JSON.parse(message.body);
+          const ownerId = people.shift().id;
+          commit('main/updateRoom', { roomId: ownerId, others: people }, { root: true });
+        },
+        {
+          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+        }
+        );
       }
     );
+  },
 
-    // this.stompClient.subscribe()
+  createRoom(context, description) {
+    this.stompClient.send('/app/rooms/addRoom',
+      JSON.stringify({
+        ownerId: this.$auth.$storage.getUniversal('user').id,
+        description,
+      }),
+      {
+        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+      },
+    );
+  },
+
+  joinRoom({ commit }, roomOwnerId) {
+    this.stompClient.send('/app/rooms/joinRoom',
+      roomOwnerId,
+      {
+        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+      },
+    );
+  },
+
+  disconnect() {
+    this.stompClient.disconnect(() => {}, {
+      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+    });
   }
 };

@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'TopMenu',
   data() {
@@ -74,8 +76,10 @@ export default {
     },
   },
   methods: {
-    navigate(item) {
+    ...mapActions({ disconnect: 'websocket/disconnect' }),
+    async navigate(item) {
       if (item === 'logout') {
+        await this.disconnect();
         this.$auth.logout();
         this.$auth.$storage.removeUniversal('user');
         this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_logout'), color: 'success' });

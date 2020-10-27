@@ -1,5 +1,75 @@
 <template>
   <v-card>
+    <v-card-title>
+      Rooms
+    </v-card-title>
+    <v-row justify="center">
+      <v-col sm="10">
+        <v-dialog
+          v-model="roomOpenModalOpen"
+          persistent
+          max-width="600px"
+        >
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="on"
+            >
+              Create room
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline"> Create room</span>
+            </v-card-title>
+            <v-card-text>
+              <ValidationObserver ref="observer">
+                <v-container>
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="12"
+                    >
+                      <ValidationProvider
+                        v-slot="{errors}"
+                        name="Description"
+                        rules="max:40"
+                      >
+                        <v-text-field
+                          v-model="description"
+                          label="Description"
+                          hint="Add a short description to your room"
+                          :error-messages="errors"
+                          type="text"
+                        />
+                      </ValidationProvider>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </ValidationObserver>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer/>
+              <v-btn
+                color="blue darken-1"
+                @click="roomOpenModalOpen = false"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                color="blue darken-1"
+                @click="createRoom"
+              >
+                Create Room
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+    </v-row>
     <v-row justify="center">
       <v-col sm="10">
         <v-data-table
@@ -22,7 +92,7 @@
           </template>
 
           <template #item.actions="{item}">
-            <v-btn v-if="item.others.length < 7">
+            <v-btn v-if="item.others.length < 7" @click="joinRoom(item.owner.id)">
               Join
             </v-btn>
           </template>
@@ -34,10 +104,17 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 
 export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver,
+  },
   data() {
     return {
+      roomOpenModalOpen: false,
+      description: '',
       headers: [
         {
           text: 'Owner',
@@ -68,7 +145,20 @@ export default {
     this.connect();
   },
   methods: {
-    ...mapActions({ connect: 'websocket/connect' }),
+    ...mapActions({
+      connect: 'websocket/connect',
+      createRoomAction: 'websocket/createRoom',
+      joinRoom: 'websocket/joinRoom',
+    }),
+    async createRoom() {
+      // eslint-disable-next-line no-unused-vars
+      const descriptionValid = await this.$refs.observer.validate();
+      if (!descriptionValid) {
+        return;
+      }
+
+      this.createRoomAction(this.description);
+    }
   },
 };
 </script>
