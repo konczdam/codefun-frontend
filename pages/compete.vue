@@ -52,15 +52,15 @@
               </ValidationObserver>
             </v-card-text>
             <v-card-actions>
-              <v-spacer/>
+              <v-spacer />
               <v-btn
-                color="blue darken-1"
+                color="warning"
                 @click="roomOpenModalOpen = false"
               >
                 Cancel
               </v-btn>
               <v-btn
-                color="blue darken-1"
+                color="primary"
                 @click="createRoom"
               >
                 Create Room
@@ -139,7 +139,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ roomList: 'main/roomList' }),
+    ...mapGetters({
+      roomList: 'main/roomList',
+      roomOwnerId: 'main/roomOwnerId'
+    }),
   },
   mounted() {
     this.connect();
@@ -148,7 +151,10 @@ export default {
     ...mapActions({
       connect: 'websocket/connect',
       createRoomAction: 'websocket/createRoom',
-      joinRoom: 'websocket/joinRoom',
+      joinRoomAction: 'websocket/joinRoom',
+      subscribeToRoomMessages: 'websocket/subscribeToRoomMessages',
+      subscribeToRoomDeleted: 'websocket/subscribeToRoomClosed',
+      subscribeToRoomGameTypeSet: 'websocket/subscribeToRoomGameTypeSet',
     }),
     async createRoom() {
       // eslint-disable-next-line no-unused-vars
@@ -158,7 +164,16 @@ export default {
       }
 
       this.createRoomAction(this.description);
-    }
+      this.subscribeToRoomMessages(this.roomOwnerId);
+      this.subscribeToRoomDeleted(this.roomOwnerId);
+    },
+    joinRoom(roomId) {
+      this.joinRoomAction(roomId);
+      this.subscribeToRoomMessages(roomId);
+      this.subscribeToRoomDeleted(roomId);
+      this.subscribeToRoomGameTypeSet(roomId);
+      this.$router.push({ name: 'room' });
+    },
   },
 };
 </script>

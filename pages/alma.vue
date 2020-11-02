@@ -7,6 +7,7 @@
       {{ roomList.length }}
     </button>
     {{ roomList.length }}
+
   </div>
 </template>
 
@@ -17,9 +18,10 @@ import 'codemirror/mode/clike/clike';
 import 'codemirror/theme/base16-dark.css';
 import 'codemirror/lib/codemirror.css';
 import { mapActions, mapGetters } from 'vuex';
+
 export default {
   components: {
-    codemirror
+    codemirror,
   },
   data() {
     return {

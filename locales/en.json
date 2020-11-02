@@ -1,6 +1,5 @@
 {
   "app": {
-    "teszt": "teszt",
     "validation": {
       "email": "Incorrect E-mail format",
       "required": "{_field_} can not be empty",
@@ -36,6 +35,12 @@
       "unsuccessful_login": "Unsuccessful login, try again!",
       "successful_logout": "Successful logout",
       "unexpected": "Unexpected error"
+    },
+    "room": {
+      "tooltip": {
+        "Normal": "First one to pass all the tests win",
+        "Code Golf": "Pass all the tests with the minimum amount of characters."
+      }
     }
   }
 }
