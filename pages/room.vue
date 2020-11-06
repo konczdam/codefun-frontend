@@ -4,8 +4,8 @@
       Room
     </v-card-title>
     <v-row justify="center">
-      <v-col sm="6">
-        <v-form v-if="isOwner">
+      <v-col v-if="isOwner" sm="6">
+        <v-form>
           <p style="font-weight: bold">
             Choose game type
           </p>
@@ -24,17 +24,44 @@
                   v-on="on"
                   @click="sendGameTypeSet(mode)"
                 >
-                  {{ mode }}
+                  {{ startCase(mode) }}
                 </v-btn>
               </template>
               <span> {{ $t('app.room.tooltip.' + mode) }} </span>
             </v-tooltip>
           </v-btn-toggle>
         </v-form>
-        <div v-else>
-          {{ room.gameType }}
-        </div>
       </v-col>
+      <template v-else>
+        <v-col sm="5">
+          <p style="font-weight: bold">
+            Selected Game Style
+          </p>
+          <v-tooltip right>
+            <template v-slot:activator="{ on, attrs }">
+              <v-chip
+                v-bind="attrs"
+                label
+                v-on="on"
+              >
+                {{ startCase(room.gameType) }}
+              </v-chip>
+            </template>
+            <span> {{ $t('app.room.tooltip.' + room.gameType) }} </span>
+          </v-tooltip>
+        </v-col>
+        <v-col sm="5">
+          <p style="opacity: 0">
+            aa
+          </p>
+          <v-btn
+            color="warning"
+            @click="leaveRoom"
+          >
+            Leave room
+          </v-btn>
+        </v-col>
+      </template>
       <v-col v-if="isOwner" sm="2">
         <p style="font-weight: bold">
           Close room
@@ -79,7 +106,7 @@
           </v-card>
         </v-dialog>
       </v-col>
-      <v-col sm="2" v-if="isOwner">
+      <v-col v-if="isOwner" sm="2">
         <p style="font-weight: bold">
           Start game
         </p>
@@ -135,6 +162,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import Message from '@/components/Message';
 import { GAME_TYPES } from '@/const';
+import { startCase } from 'lodash';
 
 export default {
   components: {
@@ -174,8 +202,10 @@ export default {
     ...mapActions({
       sendMessageToRoom: 'websocket/sendMessageToRoom',
       sendDeleteRoom: 'websocket/sendDeleteRoom',
-      sendGameTypeSetAction: 'websocket/sendGameTypeSet'
+      sendGameTypeSetAction: 'websocket/sendGameTypeSet',
+      leaveRoomAction: 'websocket/sendLeaveRoom',
     }),
+    startCase,
     sendMessage() {
       this.sendMessageToRoom({
         message: {
@@ -189,10 +219,15 @@ export default {
     },
     deleteRoom() {
       this.sendDeleteRoom(this.roomOwnerId);
+      this.$router.push({ name: 'compete' });
     },
     sendGameTypeSet(newGameType) {
       this.sendGameTypeSetAction(newGameType);
     },
+    leaveRoom() {
+      this.leaveRoomAction(this.roomOwnerId);
+      this.$router.push({ name: 'compete' });
+    }
   },
 };
 </script>

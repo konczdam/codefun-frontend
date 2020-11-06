@@ -126,6 +126,7 @@ export const actions = {
     this.stompClient.send(`/app/rooms/${roomId}/close`, '{}', {
       Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
     });
+    commit('main/deleteRoomFromList', { roomId }, { root: true });
   },
 
   subscribeToRoomClosed({ commit, getters }, roomId) {
@@ -151,7 +152,7 @@ export const actions = {
 
   subscribeToRoomGameTypeSet({ commit }, roomId) {
     const gameTypeSetSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameTypeSet`, (message) => {
-      const newGameType = message.body;
+      const newGameType = message.body.substring(1, message.body.length - 1);
       commit('main/setRoomGameType', { roomId, newGameType }, { root: true });
     });
     commit('setGameTypeSetSubscription', gameTypeSetSubscription);
@@ -165,6 +166,18 @@ export const actions = {
         Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
       }
     );
+  },
+
+  sendLeaveRoom({ commit, getters }, roomId) {
+    this.stompClient.send(`/app/rooms/${roomId}/leaveRoom`, '{}', {
+      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+    });
+    getters.roomDeletedSubscription.unsubscribe();
+    getters.roomSubscription.unsubscribe();
+    getters.gameTypeSetSubscription.unsubscribe();
+    commit('setRoomDeletedSubscription', null);
+    commit('setRoomSubscription', null);
+    commit('setGameTypeSetSubscription', null);
   },
 
   disconnect() {

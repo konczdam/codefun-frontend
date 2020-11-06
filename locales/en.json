@@ -38,8 +38,8 @@
     },
     "room": {
       "tooltip": {
-        "Normal": "First one to pass all the tests win",
-        "Code Golf": "Pass all the tests with the minimum amount of characters."
+        "NORMAL": "First one to pass all the tests win",
+        "CODE_GOLF": "Pass all the tests with the minimum amount of characters."
       }
     }
   }
