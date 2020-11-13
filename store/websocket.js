@@ -50,9 +50,6 @@ export const actions = {
         this.stompClient.subscribe('/app/rooms', (tick) => {
           const roomList = JSON.parse(tick.body);
           commit('main/initRoomList', roomList, { root: true });
-        },
-        {
-          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
         });
         this.stompClient.subscribe('/topic/rooms/newRoom', (message) => {
           const newRoom = JSON.parse(message.body);
@@ -60,9 +57,6 @@ export const actions = {
           if (newRoom.owner.id === this.$auth.$storage.getUniversal('user').id) {
             this.$router.push({ name: 'room' });
           }
-        },
-        {
-          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
         });
 
         this.stompClient.subscribe('/topic/rooms/updateRoom', (message) => {
@@ -75,11 +69,7 @@ export const actions = {
             const { roomId, gameStarted } = response;
             commit('main/updateRoomState', { roomId, gameStarted }, { root: true });
           }
-        },
-        {
-          Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-        }
-        );
+        });
       }
     );
   },
@@ -91,10 +81,7 @@ export const actions = {
       JSON.stringify({
         ownerId,
         description,
-      }),
-      {
-        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-      },
+      })
     );
   },
 
@@ -102,9 +89,6 @@ export const actions = {
     commit('main/setRoomOwnerId', roomOwnerId, { root: true });
     this.stompClient.send('/app/rooms/joinRoom',
       roomOwnerId,
-      {
-        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-      },
     );
   },
 
@@ -112,9 +96,6 @@ export const actions = {
     const roomSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/newMessage`, (data) => {
       const message = JSON.parse(data.body);
       commit('main/addRoomMessage', { roomId, message }, { root: true });
-    },
-    {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
     });
     commit('setRoomSubscription', roomSubscription);
   },
@@ -122,16 +103,11 @@ export const actions = {
   sendMessageToRoom({ commit }, { message, roomId }) {
     this.stompClient.send(`/app/rooms/${roomId}/send`,
       JSON.stringify(message),
-      {
-        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-      },
     );
   },
 
   sendDeleteRoom({ commit }, roomId) {
-    this.stompClient.send(`/app/rooms/${roomId}/close`, '{}', {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-    });
+    this.stompClient.send(`/app/rooms/${roomId}/close`, '{}');
     commit('main/deleteRoomFromList', { roomId }, { root: true });
   },
 
@@ -149,9 +125,6 @@ export const actions = {
         commit('main/deleteRoomFromList', roomId, { root: true });
         this.$router.push({ name: 'compete' });
       }
-    },
-    {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
     });
     commit('setRoomDeletedSubscription', roomDeletedSubscription);
   },
@@ -164,9 +137,6 @@ export const actions = {
         this.$router.push({ name: 'game' });
       }, 3000);
       commit('main/updateRoomFull', { roomId, updatedRoom: room }, { root: true });
-    },
-    {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
     });
   },
 
@@ -182,9 +152,6 @@ export const actions = {
   sendGameTypeSet({}, newGameType) {
     this.stompClient.send('/app/rooms/setGameType',
       newGameType,
-      {
-        Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-      }
     );
   },
 
@@ -201,14 +168,10 @@ export const actions = {
   },
 
   sendStartGame({ commit, getters }) {
-    this.stompClient.send('/app/rooms/startGame', '{}', {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-    });
+    this.stompClient.send('/app/rooms/startGame', '{}');
   },
 
   disconnect() {
-    this.stompClient.disconnect(() => {}, {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-    });
+    this.stompClient.disconnect(() => {});
   }
 };
