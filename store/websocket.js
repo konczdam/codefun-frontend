@@ -44,7 +44,7 @@ export const actions = {
     // this.stompClient.debug = (message) => {};
 
     this.stompClient.connect(
-      { },
+      { Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token },
       (frame) => {
         commit('setConnected', true);
         this.stompClient.subscribe('/app/rooms', (tick) => {
@@ -66,9 +66,15 @@ export const actions = {
         });
 
         this.stompClient.subscribe('/topic/rooms/updateRoom', (message) => {
-          const people = JSON.parse(message.body);
-          const ownerId = people.shift().id;
-          commit('main/updateRoom', { roomId: ownerId, others: people }, { root: true });
+          const response = JSON.parse(message.body);
+          if (Array.isArray(response)) {
+            const people = response;
+            const ownerId = people.shift().id;
+            commit('main/updateRoom', { roomId: ownerId, others: people }, { root: true });
+          } else {
+            const { roomId, gameStarted } = response;
+            commit('main/updateRoomState', { roomId, gameStarted }, { root: true });
+          }
         },
         {
           Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
@@ -150,6 +156,20 @@ export const actions = {
     commit('setRoomDeletedSubscription', roomDeletedSubscription);
   },
 
+  subscribeToGameStarted({ commit }, roomId) {
+    this.stompClient.subscribe(`/topic/rooms/${roomId}/gameStarted`, (message) => {
+      const room = JSON.parse(message.body);
+      this.$notifier.showMessage({ content: 'The game will start in a few seconds', color: 'success' });
+      setTimeout(() => {
+        this.$router.push({ name: 'game' });
+      }, 3000);
+      commit('main/updateRoomFull', { roomId, updatedRoom: room }, { root: true });
+    },
+    {
+      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+    });
+  },
+
   subscribeToRoomGameTypeSet({ commit }, roomId) {
     const gameTypeSetSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameTypeSet`, (message) => {
       const newGameType = message.body.substring(1, message.body.length - 1);
@@ -178,6 +198,12 @@ export const actions = {
     commit('setRoomDeletedSubscription', null);
     commit('setRoomSubscription', null);
     commit('setGameTypeSetSubscription', null);
+  },
+
+  sendStartGame({ commit, getters }) {
+    this.stompClient.send('/app/rooms/startGame', '{}', {
+      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
+    });
   },
 
   disconnect() {

@@ -21,6 +21,13 @@ export const mutations = {
   updateRoom(state, { roomId, others }) {
     state.roomList.find(it => it.owner.id === roomId).others = others;
   },
+  updateRoomState(state, { roomId, gameStarted }) {
+    state.roomList.find(it => it.owner.id === roomId).gameStarted = gameStarted;
+  },
+  updateRoomFull(state, { updatedRoom, roomId }) {
+    const roomIdx = state.roomList.indexOf(it => it.owner.id === roomId);
+    state.roomList.splice(roomIdx, 1, updatedRoom);
+  },
   setRoomOwnerId(state, roomOwnerId) {
     state.roomOwnerId = roomOwnerId;
   },

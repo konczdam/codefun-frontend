@@ -4,19 +4,46 @@
       <v-col sm="6">
         <v-card>
           <v-card-title>
-            {{ challange.title }}
+            {{ challenge.title }}
           </v-card-title>
           <v-card-text>
-            {{ challange.description }}
+            {{ challenge.description }}
           </v-card-text>
           <v-card-title>
-            sasadasd
+            Example
           </v-card-title>
+          <v-row justify="space-around">
+            <v-col sm="5">
+              <v-card>
+                <v-card-title>
+                  Input
+                </v-card-title>
+                <v-card-text>
+                  {{ challange.testCases[0].input }}
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col sm="5">
+              <v-card>
+                <v-card-title>
+                  Output
+                </v-card-title>
+                <v-card-text>
+                  {{ challange.testCases[0].expectedOutput }}
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
       <v-col sm="6">
         <v-card>
-
+          <v-form style="width: 50%" class="ml-4">
+            <v-select
+              v-model="selectedLanguage"
+              :items="AVAILABLE_LANGUAGES"
+            />
+          </v-form>
         </v-card>
       </v-col>
     </v-row>
@@ -24,8 +51,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { AVAILABLE_LANGUAGES } from '@/const';
+
 export default {
-  auth: 'guest',
+  layout: 'navigation_drawer',
   data() {
     return {
       challange: {
@@ -39,7 +69,21 @@ export default {
           }
         ],
       },
+      AVAILABLE_LANGUAGES,
+      selectedLanguage: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      roomList: 'main/roomList',
+      roomOwnerId: 'main/roomOwnerId',
+    }),
+    challenge() {
+      return this.roomList.find(it => it.owner.id === this.roomOwnerId).challenge;
+    }
+  },
+  mounted() {
+    this.selectedLanguage = this.AVAILABLE_LANGUAGES[0];
   },
 };
 </script>

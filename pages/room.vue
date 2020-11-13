@@ -113,6 +113,7 @@
         <v-btn
           :disabled="users.length < 2"
           color="primary"
+          @click="startGame"
         >
           Start
         </v-btn>
@@ -165,6 +166,7 @@ import { GAME_TYPES } from '@/const';
 import { startCase } from 'lodash';
 
 export default {
+  layout: 'navigation_drawer',
   components: {
     Message,
   },
@@ -204,6 +206,7 @@ export default {
       sendDeleteRoom: 'websocket/sendDeleteRoom',
       sendGameTypeSetAction: 'websocket/sendGameTypeSet',
       leaveRoomAction: 'websocket/sendLeaveRoom',
+      startGameAction: 'websocket/sendStartGame',
     }),
     startCase,
     sendMessage() {
@@ -227,6 +230,9 @@ export default {
     leaveRoom() {
       this.leaveRoomAction(this.roomOwnerId);
       this.$router.push({ name: 'compete' });
+    },
+    startGame() {
+      this.startGameAction();
     }
   },
 };

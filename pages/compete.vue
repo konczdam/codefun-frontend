@@ -75,7 +75,7 @@
         <v-data-table
           :key="JSON.stringify(roomList)"
           :headers="headers"
-          :items.sync="roomList"
+          :items.sync="filteredRoomList"
           class="elevation-1"
           hide-default-footer
         >
@@ -141,8 +141,11 @@ export default {
   computed: {
     ...mapGetters({
       roomList: 'main/roomList',
-      roomOwnerId: 'main/roomOwnerId'
+      roomOwnerId: 'main/roomOwnerId',
     }),
+    filteredRoomList() {
+      return this.roomList.filter(room => !room.gameStarted);
+    },
   },
   mounted() {
     this.connect();
@@ -155,6 +158,7 @@ export default {
       subscribeToRoomMessages: 'websocket/subscribeToRoomMessages',
       subscribeToRoomDeleted: 'websocket/subscribeToRoomClosed',
       subscribeToRoomGameTypeSet: 'websocket/subscribeToRoomGameTypeSet',
+      subscribeToGameStarted: 'websocket/subscribeToGameStarted',
     }),
     async createRoom() {
       // eslint-disable-next-line no-unused-vars
@@ -166,12 +170,14 @@ export default {
       this.createRoomAction(this.description);
       this.subscribeToRoomMessages(this.roomOwnerId);
       this.subscribeToRoomDeleted(this.roomOwnerId);
+      this.subscribeToGameStarted(this.roomOwnerId);
     },
     joinRoom(roomId) {
       this.joinRoomAction(roomId);
       this.subscribeToRoomMessages(roomId);
       this.subscribeToRoomDeleted(roomId);
       this.subscribeToRoomGameTypeSet(roomId);
+      this.subscribeToGameStarted(roomId);
       this.$router.push({ name: 'room' });
     },
   },
