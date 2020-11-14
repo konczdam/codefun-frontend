@@ -14,6 +14,7 @@
               <v-list-item-title>
                 AA
               </v-list-item-title>
+              BB
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -31,17 +32,26 @@
     <v-main>
       <v-container fluid>
         <nuxt />
+        <snackbar />
       </v-container>
     </v-main>
+    <the-footer />
   </v-app>
 </template>
 
 <script>
+import TheFooter from '@/components/TheFooter';
+import Snackbar from '~/components/utils/Snackbar.vue';
+
 export default {
+  components: {
+    Snackbar,
+    TheFooter,
+  },
   data() {
     return {
       drawer: false,
-      clipped: false,
+      clipped: true,
     };
   },
 };

@@ -7,20 +7,19 @@
         <snackbar />
       </v-container>
     </v-main>
-    <v-footer>
-      AAA
-    </v-footer>
+    <the-footer />
   </v-app>
 </template>
 
 <script>
+import TheFooter from '@/components/TheFooter';
 import TopMenu from '~/components/TopMenu';
 import Snackbar from '~/components/utils/Snackbar.vue';
-
 export default {
   components: {
     TopMenu,
     Snackbar,
+    TheFooter,
   },
 };
 </script>
