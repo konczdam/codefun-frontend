@@ -70,6 +70,15 @@ export const actions = {
             commit('main/updateRoomState', { roomId, gameStarted }, { root: true });
           }
         });
+
+        this.stompClient.subscribe('/user/topic/test', (message) => {
+          console.log(message);
+        });
+
+        this.stompClient.subscribe('/user/topic/codeRunResponse', (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          commit('main/setCodeRunResponse', parsedMessage, { root: true });
+        });
       }
     );
   },
@@ -156,9 +165,7 @@ export const actions = {
   },
 
   sendLeaveRoom({ commit, getters }, roomId) {
-    this.stompClient.send(`/app/rooms/${roomId}/leaveRoom`, '{}', {
-      Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token
-    });
+    this.stompClient.send(`/app/rooms/${roomId}/leaveRoom`, '{}');
     getters.roomDeletedSubscription.unsubscribe();
     getters.roomSubscription.unsubscribe();
     getters.gameTypeSetSubscription.unsubscribe();
@@ -169,6 +176,13 @@ export const actions = {
 
   sendStartGame({ commit, getters }) {
     this.stompClient.send('/app/rooms/startGame', '{}');
+  },
+
+  sendExecuteCode({ getters }, { code, testIds, challengeId, roomId, submitted }) {
+    const executeDto = { code, testIds, challengeId };
+    this.stompClient.send(`/app/rooms/${roomId}/executeCode`,
+      JSON.stringify({ ...executeDto, roomId, submitted })
+    );
   },
 
   disconnect() {

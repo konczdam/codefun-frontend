@@ -3,6 +3,7 @@ export const state = () => ({
   usersInRoom: [],
   roomOwnerId: null,
   language: 'en',
+  codeRunResponse: null,
 });
 
 export const getters = {
@@ -46,4 +47,7 @@ export const mutations = {
     const room = state.roomList.find(it => it.owner.id === roomId);
     room.gameType = newGameType;
   },
+  setCodeRunResponse(state, newResponse) {
+    state.codeRunResponse = newResponse;
+  }
 };

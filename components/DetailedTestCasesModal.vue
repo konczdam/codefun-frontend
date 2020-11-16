@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="modalOpen"
-    max-width="600px"
+    max-width="680px"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-icon
@@ -25,7 +25,7 @@
           </template>
 
           <v-sheet>
-            Activated!!
+            <test-case-example :challenge-test="testcase" />
           </v-sheet>
         </v-list-group>
       </v-list>
@@ -34,7 +34,12 @@
 </template>
 
 <script>
+import TestCaseExample from '@/components/TestCaseExample';
+
 export default {
+  components: {
+    TestCaseExample,
+  },
   props: {
     testCases: {
       type: Array,
@@ -48,7 +53,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>

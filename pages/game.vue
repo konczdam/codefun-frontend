@@ -12,28 +12,7 @@
           <v-card-title style="padding-bottom: 0; padding-top: 0">
             Example
           </v-card-title>
-          <v-row justify="space-around">
-            <v-col sm="5">
-              <v-card elevation="0" outlined>
-                <v-card-title class="innerCard">
-                  Input
-                </v-card-title>
-                <v-card-text>
-                  {{ challenge.challengeTests[0].input }}
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col sm="5">
-              <v-card elevation="0" outlined>
-                <v-card-title class="innerCard">
-                  Expected Output
-                </v-card-title>
-                <v-card-text>
-                  {{ challenge.challengeTests[0].expectedOutput }}
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+          <test-case-example :challenge-test="challenge.challengeTests[0]" :inner="true" />
           <v-card-title style="padding-bottom: 0; padding-top: 0">
             Info
           </v-card-title>
@@ -76,7 +55,6 @@
               </v-card>
             </v-col>
           </v-row>
-
         </v-card>
       </v-col>
       <v-col sm="7">
@@ -90,18 +68,45 @@
           <code-mirror
             v-model="code"
             :language="selectedLanguage"
+            stlye="height: 100%"
           />
           <v-divider />
         </v-card>
       </v-col>
     </v-row>
     <v-row>
-      <v-col sm="5">
+      <v-col sm="3">
         <v-card elevation="4" outlined>
-          asdsss
+          <v-card-title>
+            People in the room
+          </v-card-title>
+          <v-data-table
+            :key="JSON.stringify(players)"
+            hide-default-header
+            hide-default-footer
+            :items="players"
+            :headers="peopleTableHeaders"
+          >
+            <template #item.idx="{item}">
+              {{ players.indexOf(item) + 1 }}
+            </template>
+            <template #item.name="{item}">
+              {{ item.username }}
+            </template>
+            <template #item.status="{item}">
+              {{ item.status || 'coding...' }}
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
       <v-col sm="3">
+        <v-card elevation="4" outlined min-height="150px">
+          <v-card-title>
+            Console output
+          </v-card-title>
+        </v-card>
+      </v-col>
+      <v-col sm="4">
         <v-card elevation="4" outlined>
           <v-card-title>
             Test Cases
@@ -126,13 +131,57 @@
 
             <template #item.actions="{item}">
               <v-btn
-                @click="tryTestCase(item.id)"
                 color="secondary"
+                :disabled="!canSendExecuteCode"
+                @click="tryTestCase(item.id)"
               >
+                <v-icon left>
+                  mdi-play
+                </v-icon>
                 Try Testcase
               </v-btn>
             </template>
           </v-data-table>
+        </v-card>
+      </v-col>
+      <v-col sm="2">
+        <v-card elevation="4" outlined>
+          <v-card-title>
+            Actions
+          </v-card-title>
+          <v-card-actions>
+            <v-row justify="center">
+              <v-col sm="12">
+                <v-btn
+                  right
+                  color="primary"
+                  width="90%"
+                  class="text-right"
+                  :disabled="!canSendExecuteCode"
+                  @click="runAllTestCases"
+                >
+                  <v-icon left>
+                    mdi-play
+                  </v-icon>
+                  Run all Test Cases
+                </v-btn>
+
+                <v-btn
+                  right
+                  color="success"
+                  class="text-right"
+                  width="90%"
+                  :disabled="!canSendExecuteCode"
+                  style="margin-top: 10px"
+                >
+                  <v-icon left>
+                    mdi-checkbox-marked-circle-outline
+                  </v-icon>
+                  Submit
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -140,12 +189,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { AVAILABLE_LANGUAGES, BASE_CODES } from '@/const';
 import CodeMirror from '@/components/CodeMirror';
 import { startCase } from 'lodash';
 import Timer from '@/components/Timer';
 import DetailedTestCasesModal from '@/components/DetailedTestCasesModal';
+import TestCaseExample from '@/components/TestCaseExample';
 
 export default {
   layout: 'navigation_drawer',
@@ -153,12 +203,16 @@ export default {
     CodeMirror,
     Timer,
     DetailedTestCasesModal,
+    TestCaseExample,
   },
   data() {
     return {
       AVAILABLE_LANGUAGES,
       selectedLanguage: AVAILABLE_LANGUAGES[0],
       code: '',
+      errorMessage: null,
+      canSendExecuteCode: true,
+      submitted: false,
       tableHeaders: [
         {
           value: 'idx',
@@ -170,6 +224,18 @@ export default {
           value: 'actions',
           align: 'right',
         },
+      ],
+      peopleTableHeaders: [
+        {
+          value: 'idx',
+        },
+        {
+          value: 'name',
+        },
+        {
+          value: 'status',
+          align: 'right',
+        }
       ],
     };
   },
@@ -183,12 +249,24 @@ export default {
     },
     challenge() {
       return this.room.challenge;
-    }
+    },
+    players() {
+      return [this.room.owner, ...this.room.others];
+    },
   },
   watch: {
     selectedLanguage() {
       this.code = BASE_CODES[this.selectedLanguage];
     }
+  },
+  created() {
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'main/setCodeRunResponse') {
+        const response = state.main.codeRunResponse;
+        this.canSendExecuteCode = true;
+        console.log(response);
+      }
+    });
   },
   mounted() {
     this.selectedLanguage = this.AVAILABLE_LANGUAGES[0];
@@ -196,8 +274,39 @@ export default {
   },
   methods: {
     startCase,
+    ...mapActions({
+      sendExecuteCode: 'websocket/sendExecuteCode',
+    }),
     tryTestCase(testId) {
-      console.log(testId);
+      this.canSendExecuteCode = false;
+      this.sendExecuteCode({
+        code: this.code,
+        testIds: [testId],
+        challengeId: this.challenge.id,
+        roomId: this.room.owner.id,
+        submitted: false,
+      });
+    },
+    runAllTestCases() {
+      this.canSendExecuteCode = false;
+      this.sendExecuteCode({
+        code: this.code,
+        testIds: [...this.challenge.challengeTests.map(it => it.id)],
+        challengeId: this.challenge.id,
+        roomId: this.room.owner.id,
+        submitted: false,
+      });
+    },
+    submitCode() {
+      this.canSendExecuteCode = false;
+      this.submitted = true;
+      this.sendExecuteCode({
+        code: this.code,
+        testIds: [...this.challenge.challengeTests.map(it => it.id)],
+        challengeId: this.challenge.id,
+        roomId: this.room.owner.id,
+        submitted: true,
+      });
     }
   },
 };

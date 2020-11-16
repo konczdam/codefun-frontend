@@ -45,6 +45,7 @@ export default {
         theme: 'default',
         lineNumbers: true,
         line: true,
+        matchBrackets: true,
       };
     },
     codeMirrorMode() {
@@ -69,5 +70,10 @@ export default {
 </script>
 
 <style scoped>
-
+  .CodeMirror {
+    height: auto;
+  }
+  .CodeMirror-scroll {
+    max-height: 700px;
+  }
 </style>

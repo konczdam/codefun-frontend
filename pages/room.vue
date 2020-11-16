@@ -188,10 +188,7 @@ export default {
       return this.roomList.find(it => it.owner.id === this.roomOwnerId);
     },
     users() {
-      const result = [];
-      result.push(this.room.owner);
-      Array.prototype.push.apply(result, this.room.others);
-      return result;
+      return [...this.room.others, this.room.owner];
     },
     messages() {
       return this.roomList.find(it => it.owner.id === this.roomOwnerId).messages || [];

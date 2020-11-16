@@ -3,7 +3,7 @@
     <v-navigation-drawer
       v-model="drawer"
       :clipped="clipped"
-      enable-resize-watcher
+      disable-resize-watcher
       app
       absolute
     >
@@ -14,7 +14,6 @@
               <v-list-item-title>
                 AA
               </v-list-item-title>
-              BB
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
