@@ -1,6 +1,5 @@
 export const state = () => ({
   roomList: [],
-  usersInRoom: [],
   roomOwnerId: null,
   language: 'en',
   codeRunResponse: null,
@@ -10,6 +9,7 @@ export const getters = {
   getLanguage: state => state.language,
   roomList: state => state.roomList,
   roomOwnerId: state => state.roomOwnerId,
+  codeRunResponse: state => state.codeRunResponse,
 };
 
 export const mutations = {
@@ -49,5 +49,19 @@ export const mutations = {
   },
   setCodeRunResponse(state, newResponse) {
     state.codeRunResponse = newResponse;
-  }
+  },
+  updateUserInRoom(state, { roomId, userId, status, submitted, successRate }) {
+    const room = state.roomList.find(it => it.owner.id === roomId);
+    const isUpdatingOwner = roomId === userId;
+    const userToUpdate = isUpdatingOwner ? room.owner : room.others.find(user => user.id === userId);
+    userToUpdate.status = status;
+    userToUpdate.submitted = submitted;
+    userToUpdate.successrate = successRate;
+  },
+};
+
+export const actions = {
+  setCodeRunResponseToNull({ commit }) {
+    commit('setCodeRunResponse', null);
+  },
 };

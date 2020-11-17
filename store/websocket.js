@@ -7,6 +7,9 @@ export const state = () => ({
   roomSubscription: null,
   roomDeletedSubscription: null,
   gameTypeSetSubscription: null,
+  gameStartSubscription: null,
+  gameEndSubscription: null,
+  userUpdateSubscription: null,
 });
 
 export const getters = {
@@ -14,6 +17,9 @@ export const getters = {
   roomSubscription: state => state.roomSubscription,
   roomDeletedSubscription: state => state.roomDeletedSubscription,
   gameTypeSetSubscription: state => state.gameTypeSetSubscription,
+  gameStartSubscription: state => state.gameStartSubscription,
+  gameEndSubscription: state => state.gameEndSubscription,
+  userUpdateSubscription: state => state.userUpdateSubscription,
 };
 
 export const mutations = {
@@ -28,7 +34,16 @@ export const mutations = {
   },
   setGameTypeSetSubscription(state, newSub) {
     state.gameTypeSetSubscription = newSub;
-  }
+  },
+  setGameStartSubscription(state, newSub) {
+    state.gameStartSubscription = newSub;
+  },
+  setGameEndSubscription(state, newSub) {
+    state.gameEndSubscription = newSub;
+  },
+  setUserUpdateSubscription(state, newSub) {
+    state.userUpdateSubscription = newSub;
+  },
 };
 
 export const actions = {
@@ -69,10 +84,6 @@ export const actions = {
             const { roomId, gameStarted } = response;
             commit('main/updateRoomState', { roomId, gameStarted }, { root: true });
           }
-        });
-
-        this.stompClient.subscribe('/user/topic/test', (message) => {
-          console.log(message);
         });
 
         this.stompClient.subscribe('/user/topic/codeRunResponse', (message) => {
@@ -139,7 +150,7 @@ export const actions = {
   },
 
   subscribeToGameStarted({ commit }, roomId) {
-    this.stompClient.subscribe(`/topic/rooms/${roomId}/gameStarted`, (message) => {
+    const subscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameStarted`, (message) => {
       const room = JSON.parse(message.body);
       this.$notifier.showMessage({ content: 'The game will start in a few seconds', color: 'success' });
       setTimeout(() => {
@@ -147,6 +158,12 @@ export const actions = {
       }, 3000);
       commit('main/updateRoomFull', { roomId, updatedRoom: room }, { root: true });
     });
+    commit('setGameStartSubscription', subscription);
+  },
+
+  unsubscribeToGameStarted({ commit, getters }) {
+    getters.gameStartSubscription?.unsubscribe();
+    commit('setGameStartSubscription', null);
   },
 
   subscribeToRoomGameTypeSet({ commit }, roomId) {
@@ -155,6 +172,20 @@ export const actions = {
       commit('main/setRoomGameType', { roomId, newGameType }, { root: true });
     });
     commit('setGameTypeSetSubscription', gameTypeSetSubscription);
+  },
+
+  unsubscribeRoomGameTypeSet({ commit, getters }) {
+    getters.gameTypeSetSubscription?.unsubscribe();
+    commit('setGameTypeSetSubscription', null);
+  },
+
+  subscribeToGameEnd({ commit }, roomId) {
+    const gameEndSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameEnd`, (message) => {
+      const finalOrderOfPeople = JSON.parse(message.body);
+      this.$router.push({ name: 'results' });
+      commit('main/updateRoom', { roomId, others: finalOrderOfPeople }, { root: true });
+    });
+    commit('setGameEndSubscription', gameEndSubscription);
   },
 
   // eslint-disable-next-line no-empty-pattern
@@ -169,12 +200,14 @@ export const actions = {
     getters.roomDeletedSubscription.unsubscribe();
     getters.roomSubscription.unsubscribe();
     getters.gameTypeSetSubscription.unsubscribe();
+    getters.gameStartSubscription.unsubscribe();
     commit('setRoomDeletedSubscription', null);
     commit('setRoomSubscription', null);
     commit('setGameTypeSetSubscription', null);
+    commit('setGameStartSubscription', null);
   },
 
-  sendStartGame({ commit, getters }) {
+  sendStartGame() {
     this.stompClient.send('/app/rooms/startGame', '{}');
   },
 
@@ -183,6 +216,14 @@ export const actions = {
     this.stompClient.send(`/app/rooms/${roomId}/executeCode`,
       JSON.stringify({ ...executeDto, roomId, submitted })
     );
+  },
+
+  subscribeToUserUpdate({ commit }, roomId) {
+    const subscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/userUpdate`, (message) => {
+      const updateDto = JSON.parse(message.body);
+      commit('main/updateUserInRoom', { ...updateDto, roomId }, { root: true });
+    });
+    commit('setUserUpdateSubscription', subscription);
   },
 
   disconnect() {

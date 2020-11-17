@@ -100,10 +100,19 @@
         </v-card>
       </v-col>
       <v-col sm="3">
-        <v-card elevation="4" outlined min-height="150px">
+        <v-card elevation="4" outlined min-height="150px" max-height="250px" class="scroll">
           <v-card-title>
             Console output
+            <v-spacer />
+            <detailed-console-output-modal
+              v-if="lastCodeRunResponse && lastCodeRunResponse.errorMessage"
+              :console-output="lastCodeRunResponse.errorMessage"
+            />
           </v-card-title>
+          <v-card-text
+            v-if="lastCodeRunResponse && lastCodeRunResponse.errorMessage"
+            v-html="replaceLineBreakWithBreak(lastCodeRunResponse.errorMessage)"
+          />
         </v-card>
       </v-col>
       <v-col sm="4">
@@ -120,6 +129,8 @@
             hide-default-header
             :items="challenge.challengeTests"
             :headers="tableHeaders"
+            :item-class="row_class"
+            :loading="!canSendExecuteCode"
           >
             <template #item.idx="{item}">
               {{ challenge.challengeTests.indexOf(item) + 1 }}
@@ -155,7 +166,6 @@
                 <v-btn
                   right
                   color="primary"
-                  width="90%"
                   class="text-right"
                   :disabled="!canSendExecuteCode"
                   @click="runAllTestCases"
@@ -163,16 +173,16 @@
                   <v-icon left>
                     mdi-play
                   </v-icon>
-                  Run all Test Cases
+                  Run all
                 </v-btn>
 
                 <v-btn
                   right
                   color="success"
                   class="text-right"
-                  width="90%"
                   :disabled="!canSendExecuteCode"
                   style="margin-top: 10px"
+                  @click="submitCode"
                 >
                   <v-icon left>
                     mdi-checkbox-marked-circle-outline
@@ -193,9 +203,11 @@ import { mapGetters, mapActions } from 'vuex';
 import { AVAILABLE_LANGUAGES, BASE_CODES } from '@/const';
 import CodeMirror from '@/components/CodeMirror';
 import { startCase } from 'lodash';
+import { replaceLineBreakWithBreak } from '@/util';
 import Timer from '@/components/Timer';
 import DetailedTestCasesModal from '@/components/DetailedTestCasesModal';
 import TestCaseExample from '@/components/TestCaseExample';
+import DetailedConsoleOutputModal from '@/components/DetailedConsoleOutputModal';
 
 export default {
   layout: 'navigation_drawer',
@@ -204,6 +216,7 @@ export default {
     Timer,
     DetailedTestCasesModal,
     TestCaseExample,
+    DetailedConsoleOutputModal,
   },
   data() {
     return {
@@ -228,6 +241,8 @@ export default {
       peopleTableHeaders: [
         {
           value: 'idx',
+          fixed: true,
+          width: '30px',
         },
         {
           value: 'name',
@@ -235,6 +250,7 @@ export default {
         {
           value: 'status',
           align: 'right',
+          width: '350px',
         }
       ],
     };
@@ -243,7 +259,20 @@ export default {
     ...mapGetters({
       roomList: 'main/roomList',
       roomOwnerId: 'main/roomOwnerId',
+      lastCodeRunResponse: 'main/codeRunResponse',
     }),
+    lastCodeRunResponseMap() {
+      const result = {};
+      if (this.lastCodeRunResponse == null) {
+        return result;
+      }
+
+      this.lastCodeRunResponse.testResults.forEach((testResult) => {
+        result[testResult.testName] = testResult.passed;
+      });
+
+      return result;
+    },
     room() {
       return this.roomList.find(it => it.owner.id === this.roomOwnerId);
     },
@@ -263,10 +292,22 @@ export default {
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === 'main/setCodeRunResponse') {
         const response = state.main.codeRunResponse;
-        this.canSendExecuteCode = true;
         console.log(response);
+        if (mutation.payload != null) {
+          this.canSendExecuteCode = true;
+        }
       }
     });
+    this.$store.subscribe((mutation) => {
+      if (mutation.type === 'main/updateUserInRoom') {
+        this.$forceUpdate();
+      }
+    });
+
+    this.subscribeToGameEnd(this.room.owner.id);
+    this.subscribeToUserUpdate(this.room.owner.id);
+    this.unsubscribeRoomGameTypeSet();
+    this.unsubscribeToGameStarted();
   },
   mounted() {
     this.selectedLanguage = this.AVAILABLE_LANGUAGES[0];
@@ -274,11 +315,18 @@ export default {
   },
   methods: {
     startCase,
+    replaceLineBreakWithBreak,
     ...mapActions({
       sendExecuteCode: 'websocket/sendExecuteCode',
+      subscribeToGameEnd: 'websocket/subscribeToGameEnd',
+      unsubscribeRoomGameTypeSet: 'websocket/unsubscribeRoomGameTypeSet',
+      unsubscribeToGameStarted: 'websocket/unsubscribeToGameStarted',
+      subscribeToUserUpdate: 'websocket/subscribeToUserUpdate',
+      setCodeRunResponseToNull: 'main/setCodeRunResponseToNull',
     }),
     tryTestCase(testId) {
       this.canSendExecuteCode = false;
+      this.setCodeRunResponseToNull();
       this.sendExecuteCode({
         code: this.code,
         testIds: [testId],
@@ -289,6 +337,7 @@ export default {
     },
     runAllTestCases() {
       this.canSendExecuteCode = false;
+      this.setCodeRunResponseToNull();
       this.sendExecuteCode({
         code: this.code,
         testIds: [...this.challenge.challengeTests.map(it => it.id)],
@@ -307,7 +356,17 @@ export default {
         roomId: this.room.owner.id,
         submitted: true,
       });
-    }
+    },
+    row_class(test) {
+      const passed = this.lastCodeRunResponseMap[test.displayName];
+      if (passed) {
+        return 'green';
+      } else if (passed === false) {
+        return 'red';
+      } else {
+        return '';
+      }
+    },
   },
 };
 </script>
@@ -316,5 +375,9 @@ export default {
  .innerCard {
    font-size: 15px !important;
    padding: 10px 10px 10px 16px;
+ }
+
+ .scroll {
+   overflow-y: scroll
  }
 </style>
