@@ -68,9 +68,13 @@
           <code-mirror
             v-model="code"
             :language="selectedLanguage"
+            :submitted="submitted"
             stlye="height: 100%"
           />
           <v-divider />
+          <span v-if="room.gameType === 'CODE_GOLF'">
+            Code length: {{ code.length }}
+          </span>
         </v-card>
       </v-col>
     </v-row>
@@ -80,23 +84,7 @@
           <v-card-title>
             People in the room
           </v-card-title>
-          <v-data-table
-            :key="JSON.stringify(players)"
-            hide-default-header
-            hide-default-footer
-            :items="players"
-            :headers="peopleTableHeaders"
-          >
-            <template #item.idx="{item}">
-              {{ players.indexOf(item) + 1 }}
-            </template>
-            <template #item.name="{item}">
-              {{ item.username }}
-            </template>
-            <template #item.status="{item}">
-              {{ item.status || 'coding...' }}
-            </template>
-          </v-data-table>
+          <basic-mid-game-people-table :players="players" />
         </v-card>
       </v-col>
       <v-col sm="3">
@@ -143,7 +131,7 @@
             <template #item.actions="{item}">
               <v-btn
                 color="secondary"
-                :disabled="!canSendExecuteCode"
+                :disabled="!canSendExecuteCode || submitted"
                 @click="tryTestCase(item.id)"
               >
                 <v-icon left>
@@ -162,7 +150,15 @@
           </v-card-title>
           <v-card-actions>
             <v-row justify="center">
-              <v-col sm="12">
+              <v-col v-if="canSendExecuteCode && submitted" sm="12">
+                <v-btn
+                  color="primary"
+                  @click="goToResults"
+                >
+                  Go to results
+                </v-btn>
+              </v-col>
+              <v-col v-else sm="12">
                 <v-btn
                   right
                   color="primary"
@@ -176,19 +172,58 @@
                   Run all
                 </v-btn>
 
-                <v-btn
-                  right
-                  color="success"
-                  class="text-right"
-                  :disabled="!canSendExecuteCode"
-                  style="margin-top: 10px"
-                  @click="submitCode"
+                <v-dialog
+                  v-model="submitDialogOpen"
+                  persistent
+                  max-width="600px"
                 >
-                  <v-icon left>
-                    mdi-checkbox-marked-circle-outline
-                  </v-icon>
-                  Submit
-                </v-btn>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      right
+                      color="success"
+                      class="text-right"
+                      :disabled="!canSendExecuteCode"
+                      style="margin-top: 10px"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="submitDialogOpen = !submitDialogOpen"
+                    >
+                      <v-icon left>
+                        mdi-checkbox-marked-circle-outline
+                      </v-icon>
+                      Submit
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      Confirm submitting
+                    </v-card-title>
+                    <v-card-text>
+                      Do you really want to submit your solution? You won't be able change it later!
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        color="secondary"
+                        @click="submitDialogOpen = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        right
+                        color="success"
+                        class="text-right"
+                        :disabled="!canSendExecuteCode"
+                        @click="submitCode"
+                      >
+                        <v-icon left>
+                          mdi-checkbox-marked-circle-outline
+                        </v-icon>
+                        Submit
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-col>
             </v-row>
           </v-card-actions>
@@ -208,6 +243,7 @@ import Timer from '@/components/Timer';
 import DetailedTestCasesModal from '@/components/DetailedTestCasesModal';
 import TestCaseExample from '@/components/TestCaseExample';
 import DetailedConsoleOutputModal from '@/components/DetailedConsoleOutputModal';
+import BasicMidGamePeopleTable from '@/components/BasicMidGamePeopleTable';
 
 export default {
   layout: 'navigation_drawer',
@@ -217,6 +253,7 @@ export default {
     DetailedTestCasesModal,
     TestCaseExample,
     DetailedConsoleOutputModal,
+    BasicMidGamePeopleTable,
   },
   data() {
     return {
@@ -224,8 +261,10 @@ export default {
       selectedLanguage: AVAILABLE_LANGUAGES[0],
       code: '',
       errorMessage: null,
+      submitDialogOpen: false,
       canSendExecuteCode: true,
       submitted: false,
+      lastRunTests: [],
       tableHeaders: [
         {
           value: 'idx',
@@ -237,21 +276,6 @@ export default {
           value: 'actions',
           align: 'right',
         },
-      ],
-      peopleTableHeaders: [
-        {
-          value: 'idx',
-          fixed: true,
-          width: '30px',
-        },
-        {
-          value: 'name',
-        },
-        {
-          value: 'status',
-          align: 'right',
-          width: '350px',
-        }
       ],
     };
   },
@@ -298,16 +322,11 @@ export default {
         }
       }
     });
-    this.$store.subscribe((mutation) => {
-      if (mutation.type === 'main/updateUserInRoom') {
-        this.$forceUpdate();
-      }
-    });
-
     this.subscribeToGameEnd(this.room.owner.id);
     this.subscribeToUserUpdate(this.room.owner.id);
     this.unsubscribeRoomGameTypeSet();
     this.unsubscribeToGameStarted();
+    this.setEndDateForTimer(new Date(new Date().getTime() + (15 * 60 * 1000)));
   },
   mounted() {
     this.selectedLanguage = this.AVAILABLE_LANGUAGES[0];
@@ -323,9 +342,11 @@ export default {
       unsubscribeToGameStarted: 'websocket/unsubscribeToGameStarted',
       subscribeToUserUpdate: 'websocket/subscribeToUserUpdate',
       setCodeRunResponseToNull: 'main/setCodeRunResponseToNull',
+      setEndDateForTimer: 'timer/setEndDate',
     }),
     tryTestCase(testId) {
       this.canSendExecuteCode = false;
+      this.lastRunTests = [this.challenge.challengeTests.find(it => it.id === testId).displayName];
       this.setCodeRunResponseToNull();
       this.sendExecuteCode({
         code: this.code,
@@ -333,10 +354,12 @@ export default {
         challengeId: this.challenge.id,
         roomId: this.room.owner.id,
         submitted: false,
+        language: this.selectedLanguage,
       });
     },
     runAllTestCases() {
       this.canSendExecuteCode = false;
+      this.lastRunTests = this.challenge.challengeTests.map(it => it.displayName);
       this.setCodeRunResponseToNull();
       this.sendExecuteCode({
         code: this.code,
@@ -344,28 +367,36 @@ export default {
         challengeId: this.challenge.id,
         roomId: this.room.owner.id,
         submitted: false,
+        language: this.selectedLanguage,
       });
     },
     submitCode() {
       this.canSendExecuteCode = false;
+      this.lastRunTests = this.challenge.challengeTests.map(it => it.displayName);
+      this.setCodeRunResponseToNull();
       this.submitted = true;
+      this.submitDialogOpen = false;
       this.sendExecuteCode({
         code: this.code,
         testIds: [...this.challenge.challengeTests.map(it => it.id)],
         challengeId: this.challenge.id,
         roomId: this.room.owner.id,
         submitted: true,
+        language: this.selectedLanguage,
       });
     },
     row_class(test) {
       const passed = this.lastCodeRunResponseMap[test.displayName];
       if (passed) {
         return 'green';
-      } else if (passed === false) {
+      } else if (passed === false || (this.lastRunTests.includes(test.displayName) && this.canSendExecuteCode)) {
         return 'red';
       } else {
         return '';
       }
+    },
+    goToResults() {
+      this.$router.push({ name: 'results' });
     },
   },
 };

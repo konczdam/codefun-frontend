@@ -1,3 +1,3 @@
 export function replaceLineBreakWithBreak(text) {
-  return text.replaceAll(/\n/g, '<br />');
+  return text?.replaceAll(/\n/g, '<br />');
 };

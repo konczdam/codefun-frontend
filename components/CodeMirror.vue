@@ -27,6 +27,11 @@ export default {
     value: {
       type: String,
       required: true,
+    },
+    submitted: {
+      type: Boolean,
+      required: true,
+      default: false,
     }
   },
   data() {
@@ -46,6 +51,7 @@ export default {
         lineNumbers: true,
         line: true,
         matchBrackets: true,
+        readOnly: this.submitted,
       };
     },
     codeMirrorMode() {
@@ -55,7 +61,6 @@ export default {
   watch: {
     value() {
       this.code = clone(this.value);
-      console.log('value changed');
     },
   },
   mounted() {
@@ -70,10 +75,4 @@ export default {
 </script>
 
 <style scoped>
-  .CodeMirror {
-    height: auto;
-  }
-  .CodeMirror-scroll {
-    max-height: 700px;
-  }
 </style>

@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 export const state = () => ({
   roomList: [],
   roomOwnerId: null,
@@ -50,13 +52,25 @@ export const mutations = {
   setCodeRunResponse(state, newResponse) {
     state.codeRunResponse = newResponse;
   },
-  updateUserInRoom(state, { roomId, userId, status, submitted, successRate }) {
+  updateUserInRoom(state,
+    { roomId, userId, status, submitted, successRate, code, finalCodeLength, runTime, language, timeTaken }
+  ) {
     const room = state.roomList.find(it => it.owner.id === roomId);
     const isUpdatingOwner = roomId === userId;
     const userToUpdate = isUpdatingOwner ? room.owner : room.others.find(user => user.id === userId);
     userToUpdate.status = status;
     userToUpdate.submitted = submitted;
-    userToUpdate.successrate = successRate;
+    userToUpdate.successRate = successRate;
+    userToUpdate.code = code;
+    userToUpdate.finalCodeLength = finalCodeLength;
+    userToUpdate.runTime = runTime;
+    userToUpdate.language = language;
+    userToUpdate.timeTaken = timeTaken;
+  },
+  setFinalOrderOfPeopleInRoom(state, { roomId, peopleInOrder }) {
+    const room = state.roomList.find(it => it.owner.id === roomId);
+    Vue.set(room, 'finalOrder', peopleInOrder);
+    Vue.set(room, 'gameEnded', true);
   },
 };
 

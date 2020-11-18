@@ -51,8 +51,6 @@ export default {
       drawer: false,
       menu: {
         left: [
-          'alma',
-          'körte',
           'compete'
         ],
         right: [

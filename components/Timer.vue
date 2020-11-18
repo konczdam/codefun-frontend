@@ -5,14 +5,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   props: {
-    endDate: {
-      type: Date,
-      default() {
-        return new Date(new Date().getTime() + (15 * 60 * 1000));
-      }
-    },
     negative: {
       type: Boolean,
       default: false
@@ -25,6 +21,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      endDate: 'timer/endDate',
+    }),
     hour() {
       const h = Math.trunc((this.endDate - this.now) / 1000 / 3600);
       return h > 9 ? h : '0' + h;

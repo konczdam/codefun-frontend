@@ -188,10 +188,13 @@ export default {
       return this.roomList.find(it => it.owner.id === this.roomOwnerId);
     },
     users() {
+      if (!this.room) {
+        return [];
+      }
       return [...this.room.others, this.room.owner];
     },
     messages() {
-      return this.roomList.find(it => it.owner.id === this.roomOwnerId).messages || [];
+      return this.roomList.find(it => it.owner.id === this.roomOwnerId)?.messages || [];
     },
     isOwner() {
       return this.$auth.$storage.getUniversal('user').id === this.roomOwnerId;

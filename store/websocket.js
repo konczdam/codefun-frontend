@@ -137,7 +137,7 @@ export const actions = {
       if (messageText === 'Room closed') {
         getters.roomDeletedSubscription.unsubscribe();
         getters.roomSubscription.unsubscribe();
-        getters.gameTypeSetSubscription.unsubscribe();
+        getters.gameTypeSetSubscription?.unsubscribe();
         commit('setRoomDeletedSubscription', null);
         commit('setRoomSubscription', null);
         commit('setGameTypeSetSubscription', null);
@@ -182,8 +182,8 @@ export const actions = {
   subscribeToGameEnd({ commit }, roomId) {
     const gameEndSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameEnd`, (message) => {
       const finalOrderOfPeople = JSON.parse(message.body);
+      commit('main/setFinalOrderOfPeopleInRoom', { roomId, peopleInOrder: finalOrderOfPeople }, { root: true });
       this.$router.push({ name: 'results' });
-      commit('main/updateRoom', { roomId, others: finalOrderOfPeople }, { root: true });
     });
     commit('setGameEndSubscription', gameEndSubscription);
   },
@@ -211,8 +211,8 @@ export const actions = {
     this.stompClient.send('/app/rooms/startGame', '{}');
   },
 
-  sendExecuteCode({ getters }, { code, testIds, challengeId, roomId, submitted }) {
-    const executeDto = { code, testIds, challengeId };
+  sendExecuteCode({ getters }, { code, testIds, challengeId, roomId, submitted, language }) {
+    const executeDto = { code, testIds, challengeId, language };
     this.stompClient.send(`/app/rooms/${roomId}/executeCode`,
       JSON.stringify({ ...executeDto, roomId, submitted })
     );
@@ -224,6 +224,16 @@ export const actions = {
       commit('main/updateUserInRoom', { ...updateDto, roomId }, { root: true });
     });
     commit('setUserUpdateSubscription', subscription);
+  },
+
+  clearStateAfterGameEnded({ commit, getters, dispatch }) {
+    getters.gameEndSubscription?.unsubscribe();
+    commit('setGameEndSubscription', null);
+    getters.roomDeletedSubscription?.unsubscribe();
+    commit('setRoomDeletedSubscription', null);
+    getters.userUpdateSubscription?.unsubscribe();
+    commit('setUserUpdateSubscription', null);
+    dispatch('main/setCodeRunResponseToNull', null, { root: true });
   },
 
   disconnect() {
