@@ -156,7 +156,6 @@ export default {
       createRoomAction: 'websocket/createRoom',
       joinRoomAction: 'websocket/joinRoom',
       subscribeToRoomMessages: 'websocket/subscribeToRoomMessages',
-      subscribeToRoomDeleted: 'websocket/subscribeToRoomClosed',
       subscribeToRoomGameTypeSet: 'websocket/subscribeToRoomGameTypeSet',
       subscribeToGameStarted: 'websocket/subscribeToGameStarted',
     }),
@@ -169,13 +168,11 @@ export default {
 
       this.createRoomAction(this.description);
       this.subscribeToRoomMessages(this.roomOwnerId);
-      this.subscribeToRoomDeleted(this.roomOwnerId);
       this.subscribeToGameStarted(this.roomOwnerId);
     },
     joinRoom(roomId) {
       this.joinRoomAction(roomId);
       this.subscribeToRoomMessages(roomId);
-      this.subscribeToRoomDeleted(roomId);
       this.subscribeToRoomGameTypeSet(roomId);
       this.subscribeToGameStarted(roomId);
       this.$router.push({ name: 'room' });

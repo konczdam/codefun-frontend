@@ -5,7 +5,6 @@ export const state = () => ({
   websocketUrl: 'http://localhost:8080/api/ws',
   connected: false,
   roomSubscription: null,
-  roomDeletedSubscription: null,
   gameTypeSetSubscription: null,
   gameStartSubscription: null,
   gameEndSubscription: null,
@@ -15,7 +14,6 @@ export const state = () => ({
 export const getters = {
   connected: state => state.connected,
   roomSubscription: state => state.roomSubscription,
-  roomDeletedSubscription: state => state.roomDeletedSubscription,
   gameTypeSetSubscription: state => state.gameTypeSetSubscription,
   gameStartSubscription: state => state.gameStartSubscription,
   gameEndSubscription: state => state.gameEndSubscription,
@@ -28,9 +26,6 @@ export const mutations = {
   },
   setRoomSubscription(state, newSub) {
     state.roomSubscription = newSub;
-  },
-  setRoomDeletedSubscription(state, newSub) {
-    state.roomDeletedSubscription = newSub;
   },
   setGameTypeSetSubscription(state, newSub) {
     state.gameTypeSetSubscription = newSub;
@@ -47,7 +42,7 @@ export const mutations = {
 };
 
 export const actions = {
-  connect({ state, commit }) {
+  connect({ state, commit, rootState, getters }) {
     if (state.connected) {
       return;
     }
@@ -72,6 +67,23 @@ export const actions = {
           if (newRoom.owner.id === this.$auth.$storage.getUniversal('user').id) {
             this.$router.push({ name: 'room' });
           }
+        });
+        this.stompClient.subscribe('/topic/rooms/roomClosed', (message) => {
+          const roomId = parseInt(message.body);
+          if (rootState.main.roomOwnerId === roomId) {
+            getters.roomSubscription.unsubscribe();
+            getters.gameTypeSetSubscription?.unsubscribe();
+            getters.gameStartSubscription?.unsubscribe();
+            commit('setRoomSubscription', null);
+            commit('setGameTypeSetSubscription', null);
+            commit('setGameStartSubscription', null);
+            commit('main/setRoomOwnerId', null, { root: true });
+            this.$router.push({ name: 'compete' });
+            setTimeout(() => {
+              this.$notifier.showMessage({ content: 'The room was closed!', color: 'danger' });
+            }, 750);
+          }
+          commit('main/deleteRoomFromList', roomId, { root: true });
         });
 
         this.stompClient.subscribe('/topic/rooms/updateRoom', (message) => {
@@ -131,24 +143,6 @@ export const actions = {
     commit('main/deleteRoomFromList', { roomId }, { root: true });
   },
 
-  subscribeToRoomClosed({ commit, getters }, roomId) {
-    const roomDeletedSubscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/roomClosed`, (message) => {
-      const messageText = message.body;
-      if (messageText === 'Room closed') {
-        getters.roomDeletedSubscription.unsubscribe();
-        getters.roomSubscription.unsubscribe();
-        getters.gameTypeSetSubscription?.unsubscribe();
-        commit('setRoomDeletedSubscription', null);
-        commit('setRoomSubscription', null);
-        commit('setGameTypeSetSubscription', null);
-        this.$notifier.showMessage({ content: 'The room was closed!', color: 'danger' });
-        commit('main/deleteRoomFromList', roomId, { root: true });
-        this.$router.push({ name: 'compete' });
-      }
-    });
-    commit('setRoomDeletedSubscription', roomDeletedSubscription);
-  },
-
   subscribeToGameStarted({ commit }, roomId) {
     const subscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameStarted`, (message) => {
       const room = JSON.parse(message.body);
@@ -197,11 +191,9 @@ export const actions = {
 
   sendLeaveRoom({ commit, getters }, roomId) {
     this.stompClient.send(`/app/rooms/${roomId}/leaveRoom`, '{}');
-    getters.roomDeletedSubscription.unsubscribe();
     getters.roomSubscription.unsubscribe();
     getters.gameTypeSetSubscription.unsubscribe();
     getters.gameStartSubscription.unsubscribe();
-    commit('setRoomDeletedSubscription', null);
     commit('setRoomSubscription', null);
     commit('setGameTypeSetSubscription', null);
     commit('setGameStartSubscription', null);
@@ -229,8 +221,6 @@ export const actions = {
   clearStateAfterGameEnded({ commit, getters, dispatch }) {
     getters.gameEndSubscription?.unsubscribe();
     commit('setGameEndSubscription', null);
-    getters.roomDeletedSubscription?.unsubscribe();
-    commit('setRoomDeletedSubscription', null);
     getters.userUpdateSubscription?.unsubscribe();
     commit('setUserUpdateSubscription', null);
     dispatch('main/setCodeRunResponseToNull', null, { root: true });

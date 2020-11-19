@@ -37,7 +37,7 @@
           <p style="font-weight: bold">
             Selected Game Style
           </p>
-          <v-tooltip right>
+          <v-tooltip v-if="room" right>
             <template v-slot:activator="{ on, attrs }">
               <v-chip
                 v-bind="attrs"
