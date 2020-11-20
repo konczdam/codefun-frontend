@@ -56,6 +56,7 @@ export default {
         right: [
           'login',
           'register',
+          'challenges',
           'user',
           'logout',
         ]
@@ -94,6 +95,11 @@ export default {
       case 'logout':
       case 'user':
         return this.userLoggedIn;
+      case 'challenges':
+        if (!this.userLoggedIn) {
+          return false;
+        }
+        return this.$auth.user.roles.includes('ROLE_ADMIN');
       }
     },
   },
