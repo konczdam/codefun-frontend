@@ -139,6 +139,7 @@
 
 <script>
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import { cloneDeep, snakeCase } from 'lodash';
 
 export default {
   components: {
@@ -157,14 +158,25 @@ export default {
       open: false,
       isFormValid: false,
       challengeData: {
+        id: null,
         title: null,
         description: null,
         challengeTests: [{}],
       },
     };
   },
+  watch: {
+    open() {
+      if (this.challenge) {
+        this.challengeData = cloneDeep(this.challenge);
+      }
+    },
+  },
   methods: {
     emitSaveEvent() {
+      this.challengeData.challengeTests.forEach((it) => {
+        it.displayName = snakeCase(it.displayName);
+      });
       this.$emit('save', this.challengeData);
       this.open = false;
     },

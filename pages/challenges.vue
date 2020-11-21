@@ -56,7 +56,7 @@
           {{ item.challengeTests.length }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <challenge-edit-modal :challenge="item" @save="editItem()">
+          <challenge-edit-modal :challenge="item" @save="editItem">
             <template v-slot:default="slotProps">
               <v-icon
                 small
@@ -163,9 +163,26 @@ export default {
       updateOptions: 'challenges/updateOptions',
       saveChallengeAction: 'challenges/saveChallenge',
       deleteChallengeAction: 'challenges/deleteChallenge',
+      updateChallengeAction: 'challenges/updateChallenge',
     }),
-    editItem() {
-      console.log('edit item');
+    editItem(challengeData) {
+      const success = this.updateChallengeAction(challengeData);
+      if (success) {
+        this.$notifier.showMessage({
+          content: 'Challenge successfully updated!',
+          color: 'success'
+        });
+        this.loading = true;
+        setTimeout(async() => {
+          await this.getData();
+          this.loading = false;
+        }, 500);
+      } else {
+        this.$notifier.showMessage({
+          content: 'something went wrong updating the challenge! Try again!',
+          color: 'error'
+        });
+      }
     },
     openChallengeDeleteModal(id) {
       this.challengeIdToDelete = id;

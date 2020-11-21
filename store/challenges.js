@@ -37,15 +37,7 @@ export const mutations = {
     state.serverItemsLength = newLength;
   },
 };
-// page = {
-//   pageSize: body.size,
-//   pageNumber: body.number,
-//   first: body.first,
-//   last: body.last,
-//   elements: body.numberOfElements,
-//   totalElements: body.totalElements,
-//   totalPages: body.totalPages
-// };
+
 export const actions = {
   async getChallengesFromServer({ commit, getters }) {
     const response = await this.$axios.get('/challenges', {
@@ -80,4 +72,10 @@ export const actions = {
     const response = await this.$axios.delete(`/challenges/${id}`);
     return response.status === StatusCodes.OK;
   },
+
+  async updateChallenge({ commit }, challengeData) {
+    const { id } = challengeData;
+    const response = await this.$axios.patch(`/challenges/${id}`, challengeData);
+    return response.status === StatusCodes.OK;
+  }
 };
