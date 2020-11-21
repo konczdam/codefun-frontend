@@ -7,7 +7,7 @@
         :items="challenges"
         single-expand
         show-expand
-        class="elevation-1"
+        class="elevation-10"
         :options.sync="optionz"
         :server-items-length="serverItemsLength"
       >

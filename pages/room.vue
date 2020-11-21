@@ -10,7 +10,7 @@
             Choose game type
           </p>
           <v-btn-toggle
-            v-model="mode"
+            v-model="selectedMode"
             mandatory
           >
             <v-tooltip
@@ -172,7 +172,7 @@ export default {
   },
   data() {
     return {
-      mode: '',
+      selectedMode: '',
       modes: ['Normal', 'Code Golf'],
       messageData: '',
       cancelDialogOpen: false,
