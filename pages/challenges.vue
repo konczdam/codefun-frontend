@@ -8,7 +8,8 @@
         single-expand
         show-expand
         class="elevation-1"
-        @update:options="sortByChanged"
+        :options.sync="optionz"
+        :server-items-length="serverItemsLength"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -92,9 +93,6 @@ export default {
     return {
       challengeIdToDelete: null,
       loading: true,
-      pageRequest: {
-        a: 'a'
-      },
       headers: [
         {
           value: 'title',
@@ -135,8 +133,20 @@ export default {
   },
   computed: {
     ...mapGetters({
-      challenges: 'challenges/challenges'
+      challenges: 'challenges/challenges',
+      options: 'challenges/options',
+      serverItemsLength: 'challenges/serverItemsLength',
     }),
+    optionz: {
+      get() {
+        return this.options;
+      },
+      set(opt) {
+        this.updateOptions(opt);
+        this.loading = true;
+        this.getData().then(() => { this.loading = false; });
+      }
+    }
   },
   async created() {
     await this.getData();
@@ -145,6 +155,7 @@ export default {
   methods: {
     ...mapActions({
       getData: 'challenges/getChallengesFromServer',
+      updateOptions: 'challenges/updateOptions',
       saveChallengeAction: 'challenges/saveChallenge',
     }),
     editItem() {
@@ -157,8 +168,12 @@ export default {
     deleteChallenge() {
       console.log('delete item');
     },
-    sortByChanged(data) {
-      console.log(data);
+    updateOptionz(newOptionz) {
+      console.log('updating optionzz');
+      this.updateOptions(newOptionz);
+      this.loading = true;
+      this.getData();
+      this.loading = false;
     },
     async saveChallenge(challengeData) {
       const success = await this.saveChallengeAction(challengeData);

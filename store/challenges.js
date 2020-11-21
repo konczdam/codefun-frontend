@@ -2,35 +2,40 @@ import { StatusCodes } from 'http-status-codes';
 
 export const state = () => ({
   challenges: [],
-  page: {
-    page: 0,
+  options: {
+    page: 1,
     itemsPerPage: 5,
     sortBy: ['title'],
     sortDesc: [false],
     multiSort: false,
     mustSort: false,
   },
+  serverItemsLength: 0,
 });
 
 export const getters = {
-  challenges: state => state.challenges
+  challenges: state => state.challenges,
+  options: state => state.options,
+  serverItemsLength: state => state.serverItemsLength,
 };
 
 export const mutations = {
   setChallenges(state, newChallenges) {
     state.challenges = newChallenges;
   },
-  setPage(state, newPage) {
-    state.page = {
-      pageSize: newPage.size,
-      pageNumber: newPage.number,
-      first: newPage.first,
-      last: newPage.last,
-      elements: newPage.numberOfElements,
-      totalElements: newPage.totalElements,
-      totalPages: newPage.totalPages
+  setOptions(state, options) {
+    state.options = {
+      page: options.page,
+      itemsPerPage: options.itemsPerPage,
+      sortBy: options.sortBy,
+      sortDesc: options.sortDesc,
+      multiSort: false,
+      mustSort: true,
     };
-  }
+  },
+  setServerItemsLength(state, newLength) {
+    state.serverItemsLength = newLength;
+  },
 };
 // page = {
 //   pageSize: body.size,
@@ -42,16 +47,18 @@ export const mutations = {
 //   totalPages: body.totalPages
 // };
 export const actions = {
-  async getChallengesFromServer({ commit }, pageRequest) {
+  async getChallengesFromServer({ commit, getters }) {
     const response = await this.$axios.get('/challenges', {
       params: {
-        page: 0,
-        size: 5,
-        sortProperty: 'title'
+        page: getters.options.page - 1,
+        size: getters.options.itemsPerPage,
+        sortProperty: getters.options.sortBy[0],
+        sortDirection: getters.options.sortDesc[0] ? 'desc' : 'asc',
       },
     });
     if (response.status === StatusCodes.OK) {
       commit('setChallenges', response.data.content);
+      commit('setServerItemsLength', response.data.totalElements);
       console.log(response);
     } else {
       this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
@@ -61,5 +68,12 @@ export const actions = {
   async saveChallenge({ commit }, challengeData) {
     const reponse = await this.$axios.post('/challenges', challengeData);
     return reponse.status === StatusCodes.CREATED;
+  },
+
+  updateOptions({ commit }, newOptions) {
+    if (!newOptions) {
+      return;
+    }
+    commit('setOptions', newOptions);
   }
 };
