@@ -37,6 +37,7 @@
 
 <script>
 import CodeModal from '@/components/CodeModal';
+import { isNaN } from 'lodash';
 
 export default {
   components: {
@@ -91,7 +92,7 @@ export default {
   },
   methods: {
     truncToFourDecimals(num) {
-      if (num === 'NaN') {
+      if (isNaN(num)) {
         return 0;
       }
       return num.toFixed(4);

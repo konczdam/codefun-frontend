@@ -7,17 +7,6 @@
       app
       absolute
     >
-      <v-list>
-        <v-list-item-group>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
-                AA
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
     </v-navigation-drawer>
     <v-app-bar
       fixed
@@ -25,7 +14,6 @@
       clipped-left
       dark
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title> codefun</v-toolbar-title>
     </v-app-bar>
     <v-main>

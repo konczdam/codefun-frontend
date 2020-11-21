@@ -42,6 +42,7 @@
             class="mt-8"
             block
             type="submit"
+            color="secondary"
           >
             {{ $t('app.login.form.button_title') }}
           </v-btn>

@@ -94,6 +94,7 @@
           <v-btn
             class="mt-8"
             block
+            color="secondary"
             @click="userRegister"
           >
             {{ $t('app.registration.form.button_title') }}
@@ -158,7 +159,7 @@ export default {
             const loginResponse = await this.$auth.loginWith('local', { data: this.registration });
             this.$auth.setUser(loginResponse.data);
 
-            this.$router.push({ name: 'alma' });
+            this.$router.push({ name: 'compete' });
           }
         } catch (err) {
           this.$notifier.showMessage({

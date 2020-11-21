@@ -47,7 +47,11 @@
         </template>
 
         <template #item.actions="{item}">
-          <v-btn v-if="item.others.length < 7" @click="joinRoom(item.owner.id)">
+          <v-btn
+            v-if="item.others.length < 7"
+            color="secondary"
+            @click="joinRoom(item.owner.id)"
+          >
             Join
           </v-btn>
         </template>

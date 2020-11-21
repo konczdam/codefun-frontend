@@ -1,182 +1,78 @@
 <template>
-  <v-card>
-    <v-card-title class="ml-5">
-      Room
-    </v-card-title>
-    <v-row justify="center">
-      <v-col v-if="isOwner" sm="6">
-        <v-form>
-          <p style="font-weight: bold">
-            Choose game type
-          </p>
-          <v-btn-toggle
-            v-model="selectedMode"
-            mandatory
-          >
-            <v-tooltip
-              v-for="mode in GAME_TYPES"
-              :key="mode"
-              bottom
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="sendGameTypeSet(mode)"
-                >
-                  {{ startCase(mode) }}
-                </v-btn>
-              </template>
-              <span> {{ $t('app.room.tooltip.' + mode) }} </span>
-            </v-tooltip>
-          </v-btn-toggle>
-        </v-form>
-      </v-col>
-      <template v-else>
-        <v-col sm="5">
-          <p style="font-weight: bold">
-            Selected Game Style
-          </p>
-          <v-tooltip v-if="room" right>
-            <template v-slot:activator="{ on, attrs }">
-              <v-chip
-                v-bind="attrs"
-                label
-                v-on="on"
-              >
-                {{ startCase(room.gameType) }}
-              </v-chip>
-            </template>
-            <span> {{ $t('app.room.tooltip.' + room.gameType) }} </span>
-          </v-tooltip>
-        </v-col>
-        <v-col sm="5">
-          <p style="opacity: 0">
-            aa
-          </p>
-          <v-btn
-            color="warning"
-            @click="leaveRoom"
-          >
-            Leave room
-          </v-btn>
-        </v-col>
-      </template>
-      <v-col v-if="isOwner" sm="2">
-        <p style="font-weight: bold">
-          Close room
-        </p>
-        <v-dialog
-          v-model="cancelDialogOpen"
-          persistent
-          max-width="600px"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="error"
-              dark
-              v-bind="attrs"
-              v-on="on"
-            >
-              close
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              Close room
-            </v-card-title>
-            <v-card-text>
-              Do you really want to close to room?
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn
-                color="secondary"
-                @click="cancelDialogOpen = false"
-              >
-                Cancel
-              </v-btn>
-              <v-btn
-                color="error"
-                @click="deleteRoom"
-              >
-                Delete Room
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-col>
-      <v-col v-if="isOwner" sm="2">
-        <p style="font-weight: bold">
-          Start game
-        </p>
-        <v-btn
-          :disabled="users.length < 2"
-          color="primary"
-          @click="startGame"
-        >
-          Start
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col sm="7" offset="1">
-        <v-card>
-          <v-card-title>
-            Chat
-          </v-card-title>
+  <v-row justify="center">
+    <v-col sm="7">
+      <v-card class="elevation-10">
+        <v-card-title style="margin-left: 12px">
+          Room
+        </v-card-title>
+        <room-owner-action-bar
+          v-if="isOwner"
+          :users="users"
+          @game-type-set="sendGameTypeSet"
+          @delete-room="deleteRoom"
+          @start-game="startGame"
+        />
+        <room-guest-action-bar
+          v-else
+          :room="room"
+          @leave-room="leaveRoom"
+        />
+        <v-card-subtitle style="margin-left: 12px" class="font-weight-bold">
+          Chat
+        </v-card-subtitle>
+        <v-card-text>
           <div ref="chatContainer" class="chat-container">
             <message :messages="messages" />
           </div>
           <div class="typer">
-            <input v-model="messageData" type="text" placeholder="Typeí here..." @keyup.enter="sendMessage">
+            <input v-model="messageData" type="text" placeholder="Type here..." @keyup.enter="sendMessage">
           </div>
-        </v-card>
-      </v-col>
-      <v-col offset="1" sm="3">
-        <v-card class="mr-5">
-          <v-list subheader>
-            <v-subheader>
-              People in the room
-            </v-subheader>
-            <v-list-item
-              v-for="user in users"
-              :key="user.id"
-            >
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ user.username }}
-                </v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon>mdi-account</v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-card>
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col sm="3">
+      <v-card class="mr-5 elevation-10">
+        <v-card-title>
+          People in the room
+        </v-card-title>
+        <v-list>
+          <v-list-item
+            v-for="user in users"
+            :key="user.id"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ user.username }}
+              </v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Message from '@/components/Message';
-import { GAME_TYPES } from '@/const';
-import { startCase } from 'lodash';
+import { isBlank } from '@/util';
+import RoomOwnerActionBar from '@/components/RoomOwnerActionBar';
+import RoomGuestActionBar from '@/components/RoomGuestActionBar';
 
 export default {
   layout: 'navigation_drawer',
   components: {
     Message,
+    RoomOwnerActionBar,
+    RoomGuestActionBar,
   },
   data() {
     return {
-      selectedMode: '',
       modes: ['Normal', 'Code Golf'],
       messageData: '',
-      cancelDialogOpen: false,
-      GAME_TYPES,
     };
   },
   computed: {
@@ -208,12 +104,14 @@ export default {
       leaveRoomAction: 'websocket/sendLeaveRoom',
       startGameAction: 'websocket/sendStartGame',
     }),
-    startCase,
     sendMessage() {
+      if (isBlank(this.messageData)) {
+        return;
+      }
       this.sendMessageToRoom({
         message: {
-          userId: this.$auth.$storage.getUniversal('user').id,
-          username: this.$auth.$storage.getUniversal('user').username,
+          userId: this.$auth.user.id,
+          username: this.$auth.user.username,
           message: this.messageData,
         },
         roomId: this.roomOwnerId

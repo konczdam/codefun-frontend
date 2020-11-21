@@ -16,7 +16,9 @@
       <v-toolbar-items>
         <template v-for="item in menu.left">
           <v-btn
+            v-show="visible(item)"
             :key="item"
+            :class="{ 'grey darken-3': isActive(item) }"
             text
             @click="navigate(item)"
           >
@@ -30,6 +32,7 @@
           <v-btn
             v-show="visible(item)"
             :key="item"
+            :class="{ 'grey darken-3': isActive(item) }"
             text
             @click="navigate(item)"
           >
@@ -71,7 +74,7 @@ export default {
       if (!this.userLoggedIn) {
         return null;
       }
-      return this.$auth.$storage.getUniversal('user').username;
+      return this.$auth.user.username;
     },
   },
   methods: {
@@ -94,6 +97,7 @@ export default {
         return !this.userLoggedIn;
       case 'logout':
       case 'user':
+      case 'compete':
         return this.userLoggedIn;
       case 'challenges':
         if (!this.userLoggedIn) {
@@ -102,6 +106,9 @@ export default {
         return this.$auth.user.roles.includes('ROLE_ADMIN');
       }
     },
+    isActive(item) {
+      return `/${item}` === this.$route.path;
+    }
   },
 };
 </script>
