@@ -39,6 +39,7 @@ export default {
   methods: {
     sendConfirm() {
       this.$emit('delete-challenge');
+      this.open = false;
     },
     show() {
       this.open = true;

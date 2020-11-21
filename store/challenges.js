@@ -59,15 +59,14 @@ export const actions = {
     if (response.status === StatusCodes.OK) {
       commit('setChallenges', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
-      console.log(response);
     } else {
       this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
     }
   },
 
   async saveChallenge({ commit }, challengeData) {
-    const reponse = await this.$axios.post('/challenges', challengeData);
-    return reponse.status === StatusCodes.CREATED;
+    const response = await this.$axios.post('/challenges', challengeData);
+    return response.status === StatusCodes.CREATED;
   },
 
   updateOptions({ commit }, newOptions) {
@@ -75,5 +74,10 @@ export const actions = {
       return;
     }
     commit('setOptions', newOptions);
-  }
+  },
+
+  async deleteChallenge({ commit }, id) {
+    const response = await this.$axios.delete(`/challenges/${id}`);
+    return response.status === StatusCodes.OK;
+  },
 };

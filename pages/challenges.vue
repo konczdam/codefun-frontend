@@ -22,7 +22,7 @@
               vertical
             />
             <v-spacer />
-            <challenge-edit-modal @save="saveChallenge">
+            <challenge-edit-modal ref="addNewChallengeModal" @save="saveChallenge">
               <template v-slot:default="slotProps">
                 <v-btn
                   color="primary"
@@ -56,13 +56,18 @@
           {{ item.challengeTests.length }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
+          <challenge-edit-modal :challenge="item" @save="editItem()">
+            <template v-slot:default="slotProps">
+              <v-icon
+                small
+                class="mr-2"
+                v-bind="slotProps.attrs"
+                v-on="slotProps.on"
+              >
+                mdi-pencil
+              </v-icon>
+            </template>
+          </challenge-edit-modal>
           <v-icon
             small
             @click="openChallengeDeleteModal(item.id)"
@@ -157,6 +162,7 @@ export default {
       getData: 'challenges/getChallengesFromServer',
       updateOptions: 'challenges/updateOptions',
       saveChallengeAction: 'challenges/saveChallenge',
+      deleteChallengeAction: 'challenges/deleteChallenge',
     }),
     editItem() {
       console.log('edit item');
@@ -166,14 +172,24 @@ export default {
       this.$refs.deleteChallengeModal.show();
     },
     deleteChallenge() {
-      console.log('delete item');
-    },
-    updateOptionz(newOptionz) {
-      console.log('updating optionzz');
-      this.updateOptions(newOptionz);
-      this.loading = true;
-      this.getData();
-      this.loading = false;
+      const success = this.deleteChallengeAction(this.challengeIdToDelete);
+      if (success) {
+        this.$notifier.showMessage({
+          content: 'Challenge successfully deleted!',
+          color: 'success'
+        });
+        this.loading = true;
+        setTimeout(async() => {
+          await this.getData();
+          this.loading = false;
+          this.challengeIdToDelete = null;
+        }, 500);
+      } else {
+        this.$notifier.showMessage({
+          content: 'something went wrong deleting the challenge! Try again!',
+          color: 'error'
+        });
+      }
     },
     async saveChallenge(challengeData) {
       const success = await this.saveChallengeAction(challengeData);
@@ -182,6 +198,7 @@ export default {
           content: 'Challenge successfully created!',
           color: 'success'
         });
+        this.$refs.addNewChallengeModal.clear();
       } else {
         this.$notifier.showMessage({
           content: 'something went wrong saving the challenge! Try again!',

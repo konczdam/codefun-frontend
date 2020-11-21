@@ -9,6 +9,7 @@
     </template>
     <validation-observer ref="observer" v-slot="{ invalid }">
       <v-form
+        ref="form"
         v-model="isFormValid"
         @submit.prevent="emitSaveEvent"
       >
@@ -159,7 +160,7 @@ export default {
         title: null,
         description: null,
         challengeTests: [{}],
-      }
+      },
     };
   },
   methods: {
@@ -172,7 +173,17 @@ export default {
     },
     deleteTest(idx) {
       this.challengeData.challengeTests.splice(idx, 1);
-    }
+    },
+    clear() {
+      this.challengeData = {
+        title: null,
+        description: null,
+        challengeTests: [{}],
+      };
+      this.$nextTick(() => {
+        this.$refs.observer.reset();
+      });
+    },
   },
 };
 </script>
