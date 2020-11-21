@@ -2,7 +2,14 @@ import { StatusCodes } from 'http-status-codes';
 
 export const state = () => ({
   challenges: [],
-  page: null,
+  page: {
+    page: 0,
+    itemsPerPage: 5,
+    sortBy: ['title'],
+    sortDesc: [false],
+    multiSort: false,
+    mustSort: false,
+  },
 });
 
 export const getters = {
@@ -45,6 +52,14 @@ export const actions = {
     });
     if (response.status === StatusCodes.OK) {
       commit('setChallenges', response.data.content);
+      console.log(response);
+    } else {
+      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
     }
   },
+
+  async saveChallenge({ commit }, challengeData) {
+    const reponse = await this.$axios.post('/challenges', challengeData);
+    return reponse.status === StatusCodes.CREATED;
+  }
 };

@@ -8,7 +8,7 @@
         single-expand
         show-expand
         class="elevation-1"
-        @update:sort-by="sortByChanged"
+        @update:options="sortByChanged"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -19,9 +19,9 @@
               class="mx-4"
               inset
               vertical
-            ></v-divider>
-            <v-spacer></v-spacer>
-            <challenge-edit-modal>
+            />
+            <v-spacer />
+            <challenge-edit-modal @save="saveChallenge">
               <template v-slot:default="slotProps">
                 <v-btn
                   color="primary"
@@ -106,7 +106,8 @@ export default {
         },
         {
           value: 'testCount',
-          text: 'Test Count'
+          text: 'Test Count',
+          sortable: false,
         },
         {
           value: 'actions',
@@ -137,13 +138,14 @@ export default {
       challenges: 'challenges/challenges'
     }),
   },
-  async mounted() {
+  async created() {
     await this.getData();
     this.loading = false;
   },
   methods: {
     ...mapActions({
-      getData: 'challenges/getChallengesFromServer'
+      getData: 'challenges/getChallengesFromServer',
+      saveChallengeAction: 'challenges/saveChallenge',
     }),
     editItem() {
       console.log('edit item');
@@ -157,6 +159,23 @@ export default {
     },
     sortByChanged(data) {
       console.log(data);
+    },
+    async saveChallenge(challengeData) {
+      const success = await this.saveChallengeAction(challengeData);
+      if (success) {
+        this.$notifier.showMessage({
+          content: 'Challenge successfully created!',
+          color: 'success'
+        });
+      } else {
+        this.$notifier.showMessage({
+          content: 'something went wrong saving the challenge! Try again!',
+          color: 'error'
+        });
+      }
+      this.loading = true;
+      await this.getData();
+      this.loading = false;
     },
   },
 };
