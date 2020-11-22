@@ -54,10 +54,7 @@
 
 <script>
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import {
-  StatusCodes,
-  getReasonPhrase,
-} from 'http-status-codes';
+import { mapActions } from 'vuex';
 
 export default {
   auth: 'guest',
@@ -75,25 +72,22 @@ export default {
       }
     };
   },
+  created() {
+    const data = this.$auth.$storage.getUniversal('user');
+    if (data) {
+      this.loginWithLocalData(data);
+    }
+  },
   methods: {
+    ...mapActions({
+      loginAction: 'authActions/login',
+      loginWithLocalData: 'authActions/loginWithLocalData',
+    }),
     async userLogin() {
       if (this.isFormValid === true) {
-        try {
-          this.$nuxt.$loading.start();
-          const response = await this.$auth.loginWith('local', { data: this.login });
-          this.$nuxt.$loading.finish();
-          if (response.status === StatusCodes.OK) {
-            this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_login'), color: 'success' });
-            this.$auth.setUser(response.data);
-            this.$auth.$storage.setUniversal('user', response.data, true);
-            // this.$router.push({ name: 'alma' });
-            this.$router.push({ name: 'compete' });
-          } else {
-            this.$notifier.showMessage({ content: this.$t('app.snackbar.unsuccessful_login') + getReasonPhrase(response.status), color: 'error' });
-          }
-        } catch (err) {
-          this.$notifier.showMessage({ content: this.$t('app.snackbar.unexpected'), color: 'error' });
-        }
+        this.$nuxt.$loading.start();
+        await this.loginAction(this.login);
+        this.$nuxt.$loading.finish();
       }
     }
   },

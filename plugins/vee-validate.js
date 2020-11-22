@@ -22,6 +22,14 @@ export default function({ app }) {
     message: i18n.t('app.validation.password_match')
   });
 
+  extend('newPassword', {
+    params: ['target'],
+    validate(value, { target }) {
+      return value !== target;
+    },
+    message: 'The new Password must not match the old password!'
+  });
+
   extend('min', {
     ...min,
     message: i18n.t('app.validation.min')

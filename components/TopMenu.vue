@@ -82,7 +82,7 @@ export default {
     async navigate(item) {
       if (item === 'logout') {
         await this.disconnect();
-        this.$auth.logout();
+        await this.$auth.logout();
         this.$auth.$storage.removeUniversal('user');
         this.$notifier.showMessage({ content: this.$t('app.snackbar.successful_logout'), color: 'success' });
         this.$router.push({ name: 'login' });
