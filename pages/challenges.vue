@@ -151,7 +151,7 @@ export default {
         this.loading = true;
         this.getData().then(() => { this.loading = false; });
       }
-    }
+    },
   },
   async created() {
     await this.getData();

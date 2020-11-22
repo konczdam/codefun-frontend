@@ -54,7 +54,8 @@ export default {
       drawer: false,
       menu: {
         left: [
-          'compete'
+          'compete',
+          'friends',
         ],
         right: [
           'login',
@@ -98,6 +99,7 @@ export default {
       case 'logout':
       case 'user':
       case 'compete':
+      case 'friends':
         return this.userLoggedIn;
       case 'challenges':
         if (!this.userLoggedIn) {
