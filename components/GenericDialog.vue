@@ -5,19 +5,19 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        color="secondary"
+        :color="buttonColor"
         v-bind="attrs"
         v-on="on"
       >
-        Add friend
+        {{ buttonText }}
       </v-btn>
     </template>
     <v-card>
       <v-card-title>
-        Send friend request
+        {{ title }}
       </v-card-title>
       <v-card-text>
-        {{ username }} will receive a friend request.
+        {{ text }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -25,10 +25,10 @@
           cancel
         </v-btn>
         <v-btn
-          color="secondary"
+          :color="buttonColor"
           @click="sendEvent"
         >
-          send request
+          {{ acceptText }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -38,9 +38,26 @@
 <script>
 export default {
   props: {
-    username: {
+    buttonText: {
       type: String,
       required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+    acceptText: {
+      type: String,
+      required: true,
+    },
+    buttonColor: {
+      type: String,
+      required: false,
+      default: 'primary',
     },
   },
   data() {
@@ -50,7 +67,7 @@ export default {
   },
   methods: {
     sendEvent() {
-      this.$emit('send-request');
+      this.$emit('on-confirm');
       this.open = false;
     }
   },

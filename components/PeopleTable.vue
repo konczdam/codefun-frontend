@@ -39,30 +39,15 @@ export default {
       type: String,
       required: true,
     },
+    headers: {
+      type: Array,
+      required: true,
+    }
   },
   data() {
     return {
       loading: true,
       search: '',
-      headers: [
-        {
-          value: 'username',
-          text: 'User name'
-        },
-        {
-          value: 'gamesPlayed',
-          text: 'Games played',
-        },
-        {
-          value: 'gamesWon',
-          text: 'Games won'
-        },
-        {
-          value: 'actions',
-          text: 'Actions',
-          sortable: false,
-        },
-      ],
     };
   },
   computed: {

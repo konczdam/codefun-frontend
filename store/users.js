@@ -49,6 +49,18 @@ export const mutations = {
 };
 
 export const actions = {
+  clearState({ commit }) {
+    commit('setOptions', {
+      page: 1,
+      itemsPerPage: 5,
+      sortBy: ['username'],
+      sortDesc: [false],
+      multiSort: false,
+      mustSort: false,
+    });
+    commit('setSearchString', null);
+    commit('setServerItemsLength', 0);
+  },
   async getUserDataFromServer({ commit }) {
     const id = this.$auth.user.id;
     const response = await this.$axios.get(`/users/${id}`);
@@ -103,6 +115,24 @@ export const actions = {
     }
   },
 
+  async getUsersFriendRequestSentTo({ commit, getters }) {
+    const response = await this.$axios.get('/users/friend-requests-sent-to', {
+      params: {
+        page: getters.options.page - 1,
+        size: getters.options.itemsPerPage,
+        sortProperty: getters.options.sortBy[0],
+        sortDirection: getters.options.sortDesc[0] ? 'desc' : 'asc',
+        name: getters.searchString ?? null
+      },
+    });
+    if (response.status === StatusCodes.OK) {
+      commit('setOtherUsers', response.data.content);
+      commit('setServerItemsLength', response.data.totalElements);
+    } else {
+      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+    }
+  },
+
   updateOptions({ commit }, newOptions) {
     if (!newOptions) {
       return;
@@ -122,6 +152,96 @@ export const actions = {
       console.log('error');
     }
   },
+
+  async cancelFriendRequest({ commit }, receiverId) {
+    const requestData = {
+      requesterId: this.$auth.user.id,
+      receiverId,
+    };
+    const response = await this.$axios.post('/friendship/rejectRequest', requestData);
+    if (response.status === StatusCodes.OK) {
+      console.log('yay');
+    } else {
+      console.log('error');
+    }
+  },
+
+  async getPageOfUsersWhoSentFriendRequests({ commit, getters }) {
+    const response = await this.$axios.get('/users/incoming-friend-requests', {
+      params: {
+        page: getters.options.page - 1,
+        size: getters.options.itemsPerPage,
+        sortProperty: getters.options.sortBy[0],
+        sortDirection: getters.options.sortDesc[0] ? 'desc' : 'asc',
+        name: getters.searchString ?? null
+      },
+    });
+    if (response.status === StatusCodes.OK) {
+      commit('setOtherUsers', response.data.content);
+      commit('setServerItemsLength', response.data.totalElements);
+    } else {
+      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+    }
+  },
+
+  async rejectFriendRequest({ commit }, requesterId) {
+    const requestData = {
+      receiverId: this.$auth.user.id,
+      requesterId,
+    };
+    console.log({ requestData });
+    const response = await this.$axios.post('/friendship/cancelRequest', requestData);
+    if (response.status === StatusCodes.OK) {
+      console.log('yay');
+    } else {
+      console.log('error');
+    }
+  },
+
+  async acceptFriendRequest({ commit }, requesterId) {
+    const requestData = {
+      receiverId: this.$auth.user.id,
+      requesterId,
+    };
+    const response = await this.$axios.post('/friendship/acceptRequest', requestData);
+    if (response.status === StatusCodes.OK) {
+      console.log('yay');
+    } else {
+      console.log('error');
+    }
+  },
+
+  async getFriendsFromServer({ commit, getters }) {
+    const response = await this.$axios.get('/users/friends', {
+      params: {
+        page: getters.options.page - 1,
+        size: getters.options.itemsPerPage,
+        sortProperty: getters.options.sortBy[0],
+        sortDirection: getters.options.sortDesc[0] ? 'desc' : 'asc',
+        name: getters.searchString ?? null
+      },
+    });
+    if (response.status === StatusCodes.OK) {
+      commit('setOtherUsers', response.data.content);
+      commit('setServerItemsLength', response.data.totalElements);
+    } else {
+      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+    }
+  },
+
+  async removeFriend({ commit }, requesterId) {
+    const requestData = {
+      receiverId: this.$auth.user.id,
+      requesterId,
+    };
+    const response = await this.$axios.post('/friendship/removeFriend', requestData);
+    if (response.status === StatusCodes.OK) {
+      console.log('yay');
+    } else {
+      console.log('error');
+    }
+  },
+
   setSearchString({ commit }, newString) {
     commit('setSearchString', newString);
   }
