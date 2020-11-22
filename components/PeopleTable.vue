@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-card-title>
-          Other players
+          {{ title }}
           <v-spacer />
           <v-text-field
             v-model="search"
@@ -22,10 +22,7 @@
           :server-items-length="serverItemsLength"
         >
           <template #item.actions="{item}">
-            <add-friend-dialog
-              :username="item.username"
-              @send-request="sendFriendRequest(item.id)"
-            />
+            <slot name="actions" :user="item" />
           </template>
         </v-data-table>
       </v-col>
@@ -35,11 +32,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import AddFriendDialog from '@/components/AddFriendDialog';
 
 export default {
-  components: {
-    AddFriendDialog
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -79,30 +78,31 @@ export default {
       set(opt) {
         this.updateOptions(opt);
         this.loading = true;
-        this.getUsersFromServer().then(() => { this.loading = false; });
+        this.emit('get-data').then(() => { this.loading = false; });
       }
     },
   },
   async created() {
-    await this.getUsersFromServer();
+    await this.emit('get-data');
     this.loading = false;
   },
   methods: {
     ...mapActions({
-      getUsersFromServer: 'users/getUsersFromServer',
       updateOptions: 'users/updateOptions',
-      sendFriendRequestAction: 'users/sendFriendRequest',
       setSearchString: 'users/setSearchString',
     }),
-    sendFriendRequest(id) {
-      this.sendFriendRequestAction(id);
-    },
     async searchByName() {
       this.loading = true;
       await this.setSearchString(this.search);
-      await this.getUsersFromServer();
+      await this.emit('get-data');
       this.loading = false;
-    }
+    },
+    emit(eventName, value) {
+      return new Promise((resolve, reject) => {
+        this.$emit(eventName, value);
+        this.$nextTick(resolve);
+      });
+    },
   },
 };
 </script>

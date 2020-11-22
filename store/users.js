@@ -85,8 +85,8 @@ export const actions = {
     return false;
   },
 
-  async getUsersFromServer({ commit, getters }) {
-    const response = await this.$axios.get('/users', {
+  async getNonFriendUsersFromServer({ commit, getters }) {
+    const response = await this.$axios.get('/users/not-friends', {
       params: {
         page: getters.options.page - 1,
         size: getters.options.itemsPerPage,

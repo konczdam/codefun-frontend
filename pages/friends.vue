@@ -23,7 +23,17 @@
         c
       </v-tab-item>
       <v-tab-item>
-        <people-table />
+        <people-table
+          title="Other players"
+          @get-data="getNonFriendsUsersFromServer"
+        >
+          <template v-slot:actions="{ user }">
+            <add-friend-dialog
+              :username="user.username"
+              @send-request="sendFriendRequest(user.id)"
+            />
+          </template>
+        </people-table>
       </v-tab-item>
     </v-tabs>
   </v-card>
@@ -31,10 +41,25 @@
 
 <script>
 import PeopleTable from '@/components/PeopleTable';
+import AddFriendDialog from '@/components/AddFriendDialog';
+import { mapActions } from 'vuex';
 
 export default {
   components: {
     PeopleTable,
+    AddFriendDialog,
   },
+  methods: {
+    ...mapActions({
+      getNonFriendUsersFromServerAction: 'users/getNonFriendUsersFromServer',
+      sendFriendRequestAction: 'users/sendFriendRequest',
+    }),
+    async getNonFriendsUsersFromServer() {
+      await this.getNonFriendUsersFromServerAction();
+    },
+    sendFriendRequest(id) {
+      this.sendFriendRequestAction(id);
+    },
+  }
 };
 </script>
