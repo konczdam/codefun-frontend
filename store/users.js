@@ -13,6 +13,7 @@ export const state = () => ({
   serverItemsLength: 0,
   otherUsers: [],
   searchString: null,
+  friendIds: [],
 });
 
 export const getters = {
@@ -21,6 +22,7 @@ export const getters = {
   serverItemsLength: state => state.serverItemsLength,
   otherUsers: state => state.otherUsers,
   searchString: state => state.searchString,
+  friendIds: state => state.friendIds,
 };
 
 export const mutations = {
@@ -46,9 +48,16 @@ export const mutations = {
   setSearchString(state, searchString) {
     state.searchString = searchString;
   },
+  setFriendIds(state, friendIds) {
+    state.friendIds = friendIds;
+  },
 };
 
 export const actions = {
+  async getAllFriendIds({ commit }) {
+    const reponse = await this.$axios.get('/users/friend-ids');
+    commit('setFriendIds', reponse.data);
+  },
   clearState({ commit }) {
     commit('setOptions', {
       page: 1,

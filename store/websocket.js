@@ -92,9 +92,11 @@ export const actions = {
             const people = response;
             const ownerId = people.shift().id;
             commit('main/updateRoom', { roomId: ownerId, others: people }, { root: true });
-          } else {
+          } else if (response.gameStarted !== null) {
             const { roomId, gameStarted } = response;
             commit('main/updateRoomState', { roomId, gameStarted }, { root: true });
+          } else {
+            commit('main/updateRoomFriendsOnly', response, { root: true });
           }
         });
 
@@ -115,6 +117,10 @@ export const actions = {
         description,
       })
     );
+  },
+
+  sendFriendsOnlyUpdate({ commit }, message) {
+    this.stompClient.send('/app/rooms/setFriendsOnly', message);
   },
 
   joinRoom({ commit }, roomOwnerId) {

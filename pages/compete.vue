@@ -47,13 +47,26 @@
         </template>
 
         <template #item.actions="{item}">
-          <v-btn
-            v-if="item.others.length < 7"
-            color="secondary"
-            @click="joinRoom(item.owner.id)"
+          <v-tooltip
+            :disabled="!(item.friendsOnly && !friendIds.includes(item.owner.id))"
+            bottom
           >
-            Join
-          </v-btn>
+            <template v-slot:activator="{ on }">
+              <div class="d-inline-block" v-on="on">
+                <v-btn
+                  v-if="item.others.length < 7"
+                  :disabled="item.friendsOnly && !friendIds.includes(item.owner.id)"
+                  color="secondary"
+                  @click="joinRoom(item.owner.id)"
+                >
+                  Join
+                </v-btn>
+              </div>
+            </template>
+            <span>
+              The owner only allows friends to join
+            </span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-col>
@@ -97,13 +110,22 @@ export default {
     ...mapGetters({
       roomList: 'main/roomList',
       roomOwnerId: 'main/roomOwnerId',
+      friendIds: 'users/friendIds',
     }),
     filteredRoomList() {
       return this.roomList.filter(room => !room.gameStarted);
     },
   },
-  mounted() {
+  async mounted() {
     this.connect();
+    await this.getAllFriendIds();
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'main/updateRoomFriendsOnly') {
+        this.$nextTick(() => {
+          this.$forceUpdate();
+        });
+      }
+    });
   },
   methods: {
     ...mapActions({
@@ -113,6 +135,7 @@ export default {
       subscribeToRoomMessages: 'websocket/subscribeToRoomMessages',
       subscribeToRoomGameTypeSet: 'websocket/subscribeToRoomGameTypeSet',
       subscribeToGameStarted: 'websocket/subscribeToGameStarted',
+      getAllFriendIds: 'users/getAllFriendIds',
     }),
     createRoom(description) {
       this.createRoomAction(description);

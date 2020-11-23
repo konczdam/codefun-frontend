@@ -4,6 +4,12 @@
       <v-card class="elevation-10">
         <v-card-title style="margin-left: 12px">
           Room
+          <v-spacer />
+          <v-switch
+            v-if="isOwner"
+            label="Allow only friends"
+            @change="sendFriendsOnlyUpdate"
+          />
         </v-card-title>
         <room-owner-action-bar
           v-if="isOwner"
@@ -103,6 +109,7 @@ export default {
       sendGameTypeSetAction: 'websocket/sendGameTypeSet',
       leaveRoomAction: 'websocket/sendLeaveRoom',
       startGameAction: 'websocket/sendStartGame',
+      sendFriendsOnlyUpdate: 'websocket/sendFriendsOnlyUpdate',
     }),
     sendMessage() {
       if (isBlank(this.messageData)) {
@@ -131,7 +138,10 @@ export default {
     },
     startGame() {
       this.startGameAction();
-    }
+    },
+    sendFriendsOnly(friendsOnly) {
+      console.log(friendsOnly);
+    },
   },
 };
 </script>

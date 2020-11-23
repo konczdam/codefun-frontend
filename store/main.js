@@ -27,6 +27,9 @@ export const mutations = {
   updateRoomState(state, { roomId, gameStarted }) {
     state.roomList.find(it => it.owner.id === roomId).gameStarted = gameStarted;
   },
+  updateRoomFriendsOnly(state, { roomId, friendsOnly }) {
+    state.roomList.find(it => it.owner.id === roomId).friendsOnly = friendsOnly;
+  },
   updateRoomFull(state, { updatedRoom, roomId }) {
     const roomIdx = state.roomList.indexOf(it => it.owner.id === roomId);
     state.roomList.splice(roomIdx, 1, updatedRoom);
