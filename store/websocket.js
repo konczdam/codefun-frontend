@@ -237,7 +237,7 @@ export const actions = {
     commit('setUserUpdateSubscription', null);
     dispatch('main/setCodeRunResponseToNull', null, { root: true });
     commit('main/deleteRoomFromList', { roomId: rootState.main.roomOwnerId }, { root: true });
-    commit('main/setRoomOwnerId', null);
+    commit('main/setRoomOwnerId', null, { root: true });
   },
 
   disconnect() {
