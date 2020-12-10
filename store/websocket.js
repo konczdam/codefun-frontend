@@ -51,10 +51,10 @@ export const actions = {
     this.stompClient = Stomp.over(this.socket);
 
     // comment this if you want to see debug messages
-    // this.stompClient.debug = (message) => {};
+    this.stompClient.debug = (message) => {};
 
     this.stompClient.connect(
-      { Authorization: 'Bearer ' + this.$auth.$storage.getUniversal('user').token },
+      { Authorization: 'Bearer ' + this.$auth.user.token },
       (frame) => {
         commit('setConnected', true);
         this.stompClient.subscribe('/app/rooms', (tick) => {

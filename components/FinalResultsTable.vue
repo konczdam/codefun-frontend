@@ -2,9 +2,22 @@
   <v-data-table
     :key="JSON.stringify(players)"
     hide-default-footer
+    class="elevation-10"
     :items="players"
     :headers="peopleTableHeaders"
   >
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-toolbar-title>
+          Results
+        </v-toolbar-title>
+        <v-divider
+          class="mx-4"
+          inset
+          vertical
+        />
+      </v-toolbar>
+    </template>
     <template #item.idx="{item}">
       {{ players.indexOf(item) + 1 }}.
     </template>
