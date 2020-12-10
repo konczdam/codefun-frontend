@@ -1,7 +1,12 @@
 <template>
   <v-row justify="center">
     <v-col sm="10">
-      <basic-mid-game-people-table v-if="!gameEnded" :players="players" />
+      <basic-mid-game-people-table
+        v-if="!gameEnded"
+        :players="players"
+        show-remaining-timet="true"
+        show-top="true"
+      />
       <final-results-table v-else :players="playersInFinalOrder" />
     </v-col>
   </v-row>

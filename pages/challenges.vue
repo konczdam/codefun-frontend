@@ -14,7 +14,7 @@
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>
-              Challenges
+              {{ $t('app.challenges.title') }}
             </v-toolbar-title>
             <v-divider
               class="mx-4"
@@ -29,7 +29,7 @@
                   v-bind="slotProps.attrs"
                   v-on="slotProps.on"
                 >
-                  add new challenge
+                  {{ $t('app.challenges.add_new_challenge') }}
                 </v-btn>
               </template>
             </challenge-edit-modal>
@@ -46,7 +46,7 @@
             >
               <template v-slot:top>
                 <v-toolbar flat>
-                  Test cases
+                  {{ $t('app.challenges.test_cases') }}
                 </v-toolbar>
               </template>
             </v-data-table>
@@ -101,36 +101,36 @@ export default {
       headers: [
         {
           value: 'title',
-          text: 'Title',
+          text: this.$t('app.challenges.main_table.headers.title'),
         },
         {
           value: 'description',
-          text: 'Description',
+          text: this.$t('app.challenges.main_table.headers.description'),
         },
         {
           value: 'testCount',
-          text: 'Test Count',
+          text: this.$t('app.challenges.main_table.headers.test_count'),
           sortable: false,
         },
         {
           value: 'actions',
-          text: 'Actions',
+          text: this.$t('general.actions'),
           sortable: false
         }
       ],
       testHeaders: [
         {
           value: 'displayName',
-          text: 'Display name',
+          text: this.$t('app.challenges.test_table.headers.display_name'),
         },
         {
           value: 'input',
-          text: 'Input',
+          text: this.$t('app.challenges.test_table.headers.input'),
           sortable: false,
         },
         {
           value: 'expectedOutput',
-          text: 'Expected Output',
+          text: this.$t('app.challenges.test_table.headers.expected_output'),
           sortable: false,
         },
       ]
@@ -169,7 +169,7 @@ export default {
       const success = this.updateChallengeAction(challengeData);
       if (success) {
         this.$notifier.showMessage({
-          content: 'Challenge successfully updated!',
+          content: this.$t('app.challenges.success_update'),
           color: 'success'
         });
         this.loading = true;
@@ -179,7 +179,7 @@ export default {
         }, 500);
       } else {
         this.$notifier.showMessage({
-          content: 'something went wrong updating the challenge! Try again!',
+          content: this.$t('app.challenges.error_update'),
           color: 'error'
         });
       }
@@ -192,7 +192,7 @@ export default {
       const success = this.deleteChallengeAction(this.challengeIdToDelete);
       if (success) {
         this.$notifier.showMessage({
-          content: 'Challenge successfully deleted!',
+          content: this.$t('app.challenges.success_delete'),
           color: 'success'
         });
         this.loading = true;
@@ -203,7 +203,7 @@ export default {
         }, 500);
       } else {
         this.$notifier.showMessage({
-          content: 'something went wrong deleting the challenge! Try again!',
+          content: this.$t('app.challenges.error_delete'),
           color: 'error'
         });
       }
@@ -212,13 +212,13 @@ export default {
       const success = await this.saveChallengeAction(challengeData);
       if (success) {
         this.$notifier.showMessage({
-          content: 'Challenge successfully created!',
+          content: this.$t('app.challenges.success_create'),
           color: 'success'
         });
         this.$refs.addNewChallengeModal.clear();
       } else {
         this.$notifier.showMessage({
-          content: 'something went wrong saving the challenge! Try again!',
+          content: this.$t('app.challenges.error_create'),
           color: 'error'
         });
       }

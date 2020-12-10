@@ -11,7 +11,7 @@
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>
-              Rooms
+              {{ $t('app.compete.title') }}
             </v-toolbar-title>
             <v-divider
               class="mx-4"
@@ -27,7 +27,7 @@
                   v-bind="attrs"
                   v-on="on"
                 >
-                  Create room
+                  {{ $t('app.compete.create_room') }}
                 </v-btn>
               </template>
             </create-room-modal>
@@ -59,12 +59,12 @@
                   color="secondary"
                   @click="joinRoom(item.owner.id)"
                 >
-                  Join
+                  {{ $t('app.compete.join') }}
                 </v-btn>
               </div>
             </template>
             <span>
-              The owner only allows friends to join
+              {{ $t('app.compete.onlyFriends') }}
             </span>
           </v-tooltip>
         </template>
@@ -85,21 +85,21 @@ export default {
     return {
       headers: [
         {
-          text: 'Owner',
+          text: this.$t('app.compete.room_table.headers.owner'),
           value: 'owner',
           sortable: false,
         },
         {
-          text: 'Description',
+          text: this.$t('app.compete.room_table.headers.description'),
           value: 'description',
           sortable: false,
         },
         {
-          text: 'Participants',
+          text: this.$t('app.compete.room_table.headers.participants'),
           value: 'participants',
         },
         {
-          text: 'Actions',
+          text: this.$t('general.actions'),
           value: 'actions',
           sortable: false,
         },

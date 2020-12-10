@@ -2,7 +2,7 @@
   <v-card-actions>
     <div class="ml-5">
       <p style="font-weight: bold">
-        Choose game type
+        {{ $t('app.room.action_bar.choose_game_type') }}
       </p>
       <v-btn-toggle
         v-model="selectedMode"
@@ -32,7 +32,7 @@
     <v-spacer />
     <div class="mr-5">
       <p style="font-weight: bold">
-        Close room
+        {{ $t('app.room.action_bar.close_room') }}
       </p>
       <v-dialog
         v-model="cancelDialogOpen"
@@ -46,15 +46,15 @@
             v-bind="attrs"
             v-on="on"
           >
-            close
+            {{ $t('general.close') }}
           </v-btn>
         </template>
         <v-card>
           <v-card-title>
-            Close room
+            {{ $t('app.room.action_bar.close_room') }}
           </v-card-title>
           <v-card-text>
-            Do you really want to close to room?
+            {{ $t('app.room.action_bar.close_room_modal_text') }}
           </v-card-text>
           <v-card-actions>
             <v-spacer />
@@ -62,13 +62,13 @@
               color="secondary"
               @click="cancelDialogOpen = false"
             >
-              Cancel
+              {{ $t('general.cancel') }}
             </v-btn>
             <v-btn
               color="error"
               @click="sendDeleteRoomEvent"
             >
-              Delete Room
+              {{ $t('app.room.action_bar.delete_room') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -77,14 +77,14 @@
     <v-spacer />
     <div class="mr-5">
       <p style="font-weight: bold">
-        Start game
+        {{ $t('app.room.action_bar.start_game') }}
       </p>
       <v-btn
         :disabled="users.length < 2"
         color="primary"
         @click="sendStartGameEvent"
       >
-        Start
+        {{ $t('general.start') }}
       </v-btn>
     </div>
   </v-card-actions>

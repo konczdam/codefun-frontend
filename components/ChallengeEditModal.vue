@@ -15,14 +15,14 @@
       >
         <v-card>
           <v-card-title>
-            {{ challenge ? 'Edit challenge' : 'Add challenge' }}
+            {{ challenge ? $t('app.challenges.modal.title_edit') : $t('app.challenges.modal.title_add') }}
           </v-card-title>
           <v-card-text>
             <v-row justify="start">
               <v-col sm="10">
                 <validation-provider
                   v-slot="{ errors }"
-                  name="Title"
+                  :name="$t('app.challenges.modal.form.title')"
                   rules="required"
                 >
                   <v-text-field
@@ -35,13 +35,13 @@
 
                 <validation-provider
                   v-slot="{ errors }"
-                  name="Description"
+                  :name="$t('app.challenges.modal.form.description')"
                   rules="required"
                 >
                   <v-textarea
                     v-model="challengeData.description"
                     :error-messages="errors"
-                    label="Description"
+                    :label="$t('app.challenges.modal.form.description')"
                     auto-grow
                     clearable
                     rows="3"
@@ -51,7 +51,7 @@
             </v-row>
 
             <v-card-subtitle class="pl-0 font-weight-bold">
-              Tests
+              {{ $t('app.challenges.modal.tests') }}
             </v-card-subtitle>
             <template v-for="n in challengeData.challengeTests.length">
               <v-sheet :key="n" elevation="3" class="mb-4 pt-2 pb-3">
@@ -68,39 +68,39 @@
                   <v-col sm="10">
                     <validation-provider
                       v-slot="{ errors }"
-                      name="Display Name"
+                      :name="$t('app.challenges.modal.form.display_name')"
                       rules="required"
                     >
                       <v-text-field
                         v-model="challengeData.challengeTests[n - 1].displayName"
                         :error-messages="errors"
-                        label="Display name"
+                        :label="$t('app.challenges.modal.form.display_name')"
                         class="ml-5"
                       />
                     </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
-                      name="Input"
+                      :name="$t('app.challenges.modal.form.input')"
                       rules="required"
                     >
                       <v-text-field
                         v-model="challengeData.challengeTests[n - 1].input"
                         :error-messages="errors"
-                        label="Input"
+                        :label="$t('app.challenges.modal.form.input')"
                         class="ml-5"
                       />
                     </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
-                      name="Expected output"
+                      :name="$t('app.challenges.modal.form.expected_output')"
                       rules="required"
                     >
                       <v-text-field
                         v-model="challengeData.challengeTests[n - 1].expectedOutput"
                         :error-messages="errors"
-                        label="Expected output"
+                        :label="$t('app.challenges.modal.form.expected_output')"
                         required
                         class="ml-5"
                       />
@@ -115,20 +115,20 @@
               color="secondary"
               @click="addNewTestCase"
             >
-              Add new test
+              {{ $t('app.challenges.modal.add_new_test') }}
             </v-btn>
             <v-spacer />
             <v-btn
               @click="open = false"
             >
-              Cancel
+              {{ $t('general.cancel') }}
             </v-btn>
             <v-btn
               type="submit"
               color="primary"
               :disabled="invalid || challengeData.challengeTests.length === 0"
             >
-              save
+              {{ $t('general.save') }}
             </v-btn>
           </v-card-actions>
         </v-card>

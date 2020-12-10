@@ -80,7 +80,10 @@ export const actions = {
             commit('main/setRoomOwnerId', null, { root: true });
             this.$router.push({ name: 'compete' });
             setTimeout(() => {
-              this.$notifier.showMessage({ content: 'The room was closed!', color: 'danger' });
+              this.$notifier.showMessage({
+                content: this.app.i18n.t('app.snackbar.room_closed'),
+                color: 'danger'
+              });
             }, 750);
           }
           commit('main/deleteRoomFromList', roomId, { root: true });
@@ -152,7 +155,10 @@ export const actions = {
   subscribeToGameStarted({ commit }, roomId) {
     const subscription = this.stompClient.subscribe(`/topic/rooms/${roomId}/gameStarted`, (message) => {
       const room = JSON.parse(message.body);
-      this.$notifier.showMessage({ content: 'The game will start in a few seconds', color: 'success' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('The game will start in a few seconds'),
+        color: 'success'
+      });
       setTimeout(() => {
         this.$router.push({ name: 'game' });
       }, 3000);
@@ -224,12 +230,14 @@ export const actions = {
     commit('setUserUpdateSubscription', subscription);
   },
 
-  clearStateAfterGameEnded({ commit, getters, dispatch }) {
+  clearStateAfterGameEnded({ commit, getters, dispatch, rootState }) {
     getters.gameEndSubscription?.unsubscribe();
     commit('setGameEndSubscription', null);
     getters.userUpdateSubscription?.unsubscribe();
     commit('setUserUpdateSubscription', null);
     dispatch('main/setCodeRunResponseToNull', null, { root: true });
+    commit('main/deleteRoomFromList', { roomId: rootState.main.roomOwnerId }, { root: true });
+    commit('main/setRoomOwnerId', null);
   },
 
   disconnect() {

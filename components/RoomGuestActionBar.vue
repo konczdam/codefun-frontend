@@ -2,7 +2,7 @@
   <v-card-actions>
     <div class="ml-5">
       <p style="font-weight: bold">
-        Selected Game Style
+        {{ $t('app.room.action_bar.selected_game_style') }}
       </p>
       <v-tooltip v-if="room" right>
         <template v-slot:activator="{ on, attrs }">
@@ -20,13 +20,13 @@
     <v-spacer />
     <div class="mr-5">
       <p style="font-weight: bold">
-        Leave room
+        {{ $t('app.room.action_bar.leave_room') }}
       </p>
       <v-btn
         color="warning"
         @click="sendLeaveRoomEvent"
       >
-        Leave room
+        {{ $t('app.room.action_bar.leave_room') }}
       </v-btn>
     </div>
   </v-card-actions>

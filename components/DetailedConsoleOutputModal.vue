@@ -9,7 +9,9 @@
           mdi-arrow-expand-all
         </v-icon>
       </template>
-      <span> tooltip </span>
+      <span>
+        {{ $t('app.game.detailed_console_output.tooltip') }}
+      </span>
     </v-tooltip>
     <v-dialog
       v-model="modalOpen"
@@ -17,7 +19,7 @@
     >
       <v-card>
         <v-card-title>
-          Console output
+          {{ $t('app.game.console_output') }}
         </v-card-title>
         <v-card-text
           v-html="replaceLineBreakWithBreak(consoleOutput)"

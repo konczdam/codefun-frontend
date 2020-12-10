@@ -34,13 +34,219 @@
       "successful_login": "Successful login",
       "unsuccessful_login": "Unsuccessful login, try again!",
       "successful_logout": "Successful logout",
-      "unexpected": "Unexpected error"
+      "unexpected": "Unexpected error",
+      "error_fetching_challenges": "there was an error fetching the challenges",
+      "error_fetching_user_data": "Failed to fetch user data from server!",
+      "password_change_success": "Password successfully changed",
+      "current_password_incorrect": "The provided current password is incorrect!",
+      "error_fetching_data": "There was an error fetching the data from the server",
+      "friend_request_success": "Friend request successfully sent!",
+      "friend_request_error": "There was an error sending the friend request. Try again!",
+      "request_reject_success": "Friend request successfully rejected!",
+      "request_reject_error": "There was an error rejecting the friend request. Try again!",
+      "accept_request_success": "Friend request successfully accepted!",
+      "accept_request_error": "There was an error accepting the friend request. Try again!",
+      "cancel_request_success": "Friend request successfully canceled!",
+      "cancel_request_error": "There was an error cancelling your friend request. Try again!",
+      "friend_remove_success": "Person successfully removed from friend list.",
+      "friend_remove_error": "There was an error removing the person from your friends. Try again!",
+      "room_closed": "The room was closed!",
+      "game_starts": "The game will start in a few seconds"
     },
     "room": {
+      "title": "Room",
+      "chat": "Chat",
+      "people_in_the_room": "People in the room",
       "tooltip": {
         "NORMAL": "First one to pass all the tests win",
         "CODE_GOLF": "Pass all the tests with the minimum amount of characters."
+      },
+      "action_bar": {
+        "selected_game_style": "Selected Game Style",
+        "leave_room": "Leave room",
+        "choose_game_type": "Choose game type",
+        "close_room": "Close room",
+        "close_room_modal_text": "Do you really want to close to room?",
+        "delete_room": "Delete Room",
+        "start_game": "Start Game"
+      }
+    },
+    "challenges": {
+      "title": "Challenges",
+      "add_new_challenge": "add new challenge",
+      "test_cases": "Test cases",
+      "error_delete": "something went wrong deleting the challenge! Try again!",
+      "success_delete": "Challenge successfully deleted!",
+      "success_create": "Challenge successfully created!",
+      "error_create": "Something went wrong saving the challenge! Try again!",
+      "success_update": "Challenge successfully updated!",
+      "error_update": "Something went wrong updating the challenge! Try again!",
+      "modal": {
+        "title_edit": "Edit challenge",
+        "title_add": "Add challenge",
+        "tests": "Tests",
+        "add_new_test": "Add new test",
+        "form": {
+          "title": "Title",
+          "description": "Description",
+          "display_name": "Display Name",
+          "input": "Input",
+          "expected_output": "Expected output"
+        }
+      },
+      "delete_challenge_modal": {
+        "title": "Delete Challenge",
+        "text": "Dou you really wanna delete this challenge?"
+      },
+      "main_table": {
+        "headers": {
+          "title": "Title",
+          "description": "Description",
+          "test_count": "Test Count"
+        }
+      },
+      "test_table": {
+        "headers": {
+          "display_name": "Display name",
+          "input": "Input",
+          "expected_output": "Expected output"
+
+        }
+      }
+    },
+    "compete": {
+      "title": "Rooms",
+      "create_room": "Create room",
+      "join": "Join",
+      "onlyFriends": "The owner only allows friends to join",
+      "create_room_modal": {
+        "title": "Create room",
+        "form": {
+          "description": "Description",
+          "description_hint": "Add a short description to your room"
+        }
+      },
+      "room_table": {
+        "headers": {
+          "owner": "Owner",
+          "description": "Description",
+          "participants": "Participants"
+        }
+      }
+    },
+    "game": {
+      "example": "Example",
+      "info": "Info",
+      "game_type": "Game Type",
+      "remaining_time": "Remaining time",
+      "code_length": "Code length",
+      "people_in_the_room": "People in the room",
+      "console_output": "Console output",
+      "test_cases": "Test Cases",
+      "test_cases_tooltip": "Click here to see test cases in detail.",
+      "try_testcase": "Try Testcase",
+      "go_to_results": "Go to results",
+      "run_all": "Run all",
+      "submit_dialog": {
+        "title": "Confirm submitting",
+        "text": "Do you really want to submit your solution? You won't be able change it later!"
+      },
+      "detailed_console_output": {
+        "tooltip": "Click here to expand console output"
+      }
+    },
+    "results": {
+      "title": "Results",
+      "coding": "coding...",
+      "check_code": "Check code",
+      "final_results_table": {
+        "headers": {
+          "name": "Name",
+          "language": "Language",
+          "time_taken": "Time taken",
+          "runtime": "runtime",
+          "code_length": "Code length",
+          "success_rate": "Success rate"
+        }
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "change_password": "Change password",
+      "password_change_modal": {
+        "title": "Password change",
+        "form": {
+          "old_password": "Old password",
+          "old_password_hint": "Your current password",
+          "new_password": "New password"
+        }
+      }
+    },
+    "friends": {
+      "tabs": {
+        "search_text": "Search By User name",
+        "friends": {
+          "text": "Friends",
+          "title": "Friends"
+        },
+        "incoming_friend_requests": {
+          "text": "Incoming Friend requests",
+          "title": "Friend requests awaiting for approval"
+        },
+        "outgoing_friend_requests": {
+          "text": "Outgoing friend requests",
+          "title": "Players that you sent friend request"
+        },
+        "find_friends": {
+          "text": "Find friends",
+          "title": "Other players"
+        }
+      },
+      "people_table": {
+        "headers": {
+          "username": "User name",
+          "games_played": "Games played",
+          "games_won": "Games won"
+        }
+      },
+      "dialogs": {
+        "remove_friend": {
+          "button_text": "Remove friend",
+          "title": "Remove user from friend list",
+          "text": "Are you sure wanna remove the user from your friend list?"
+        },
+        "reject_request": {
+          "button_text": "Reject",
+          "title": "Reject friend request",
+          "text": "Are you sure want to reject the friend request?"
+        },
+        "accept_request": {
+          "button_text": "Accept",
+          "title": "Accept friend request",
+          "text": "Are you sure want to accept the friend request?"
+        },
+        "cancel_request": {
+          "button_text": "Cancel request",
+          "title": "Cancel friend request",
+          "text": "Are you sure want to cancel your friend request?"
+        },
+        "create_request": {
+          "button_text": "Add friend",
+          "title": "Send friend request",
+          "text": "{username} will receive a friend request.",
+          "accept_text": "send request"
+        }
       }
     }
+  },
+  "general": {
+    "yes": "yes",
+    "no": "no",
+    "actions": "Actions",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "start": "Start"
   }
 }

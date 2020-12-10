@@ -9,7 +9,7 @@
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>
-          Results
+          {{ $t('app.results.title') }}
         </v-toolbar-title>
         <v-divider
           class="mx-4"
@@ -74,31 +74,31 @@ export default {
         },
         {
           value: 'name',
-          text: 'Name',
+          text: this.$t('app.results.final_results_table.headers.name'),
         },
         {
           value: 'language',
-          text: 'Language',
+          text: this.$t('app.results.final_results_table.headers.language'),
         },
         {
           value: 'timeTaken',
-          text: 'Time taken',
+          text: this.$t('app.results.final_results_table.headers.time_taken'),
         },
         {
           value: 'runtime',
-          text: 'runtime',
+          text: this.$t('app.results.final_results_table.headers.runtime'),
         },
         {
           value: 'codeLength',
-          text: 'Code length',
+          text: this.$t('app.results.final_results_table.headers.code_length'),
         },
         {
           value: 'successRate',
-          text: 'Success rate',
+          text: this.$t('app.results.final_results_table.headers.success_rate'),
         },
         {
           value: 'actions',
-          text: 'Actions',
+          text: this.$t('general.actions'),
         }
       ],
     };

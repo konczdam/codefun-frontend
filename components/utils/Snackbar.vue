@@ -6,7 +6,7 @@
   >
     {{ message }}
     <v-btn text @click="show = false">
-      Close
+      {{ $t('general.close') }}
     </v-btn>
   </v-snackbar>
 </template>
@@ -32,5 +32,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-</style>

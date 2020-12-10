@@ -12,7 +12,9 @@
     <ValidationObserver ref="observer" v-slot="{ invalid }">
       <v-card>
         <v-card-title>
-          <span class="headline"> Create room </span>
+          <span class="headline">
+            {{ $t('app.compete.create_room_modal.title') }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -24,13 +26,13 @@
               >
                 <ValidationProvider
                   v-slot="{errors}"
-                  name="Description"
+                  :name="$t('app.compete.create_room_modal.form.description')"
                   rules="max:40"
                 >
                   <v-text-field
                     v-model="description"
-                    label="Description"
-                    hint="Add a short description to your room"
+                    :label="$t('app.compete.create_room_modal.form.description')"
+                    :hint="$t('app.compete.create_room_modal.form.description_hint')"
                     :error-messages="errors"
                     type="text"
                   />
@@ -45,14 +47,14 @@
             color="warning"
             @click="open = false"
           >
-            Cancel
+            {{ $t('general.cancel') }}
           </v-btn>
           <v-btn
             color="primary"
             :disabled="invalid"
             @click="sendCreateRoomEvent"
           >
-            Create Room
+            {{ $t('app.compete.create_room_modal.title') }}
           </v-btn>
         </v-card-actions>
       </v-card>

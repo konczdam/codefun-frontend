@@ -3,7 +3,7 @@
     <v-col sm="5">
       <v-card elevation="0" outlined>
         <v-card-title :class="{ innerCard: inner }">
-          Input
+          {{ $t('app.challenges.modal.form.input') }}
         </v-card-title>
         <v-card-text>
           {{ challengeTest.input }}
@@ -13,7 +13,7 @@
     <v-col sm="5">
       <v-card elevation="0" outlined>
         <v-card-title :class="{ innerCard: inner }">
-          Expected Output
+          {{ $t('app.challenges.modal.form.expected_output') }}
         </v-card-title>
         <v-card-text>
           {{ challengeTest.expectedOutput }}

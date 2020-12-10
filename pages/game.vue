@@ -10,18 +10,18 @@
             {{ challenge.description }}
           </v-card-text>
           <v-card-title style="padding-bottom: 0; padding-top: 0">
-            Example
+            {{ $t('app.game.example') }}
           </v-card-title>
           <test-case-example :challenge-test="challenge.challengeTests[0]" :inner="true" />
           <v-card-title style="padding-bottom: 0; padding-top: 0">
-            Info
+            {{ $t('app.game.info') }}
           </v-card-title>
 
           <v-row justify="space-around">
             <v-col sm="5">
               <v-card elevation="0" outlined>
                 <v-card-title class="innerCard">
-                  Game Type
+                  {{ $t('app.game.game_type') }}
                 </v-card-title>
                 <v-card-text style="padding-bottom: 6px">
                   <v-tooltip right>
@@ -43,7 +43,7 @@
             <v-col sm="5">
               <v-card elevation="0" outlined>
                 <v-card-title class="innerCard">
-                  Remaining Time
+                  {{ $t('app.game.remaining_time') }}
                 </v-card-title>
                 <v-card-text>
                   <timer>
@@ -73,7 +73,7 @@
           />
           <v-divider />
           <span v-if="room.gameType === 'CODE_GOLF'">
-            Code length: {{ code.length }}
+            {{ $t('app.game.code_length') }}: {{ code.length }}
           </span>
         </v-card>
       </v-col>
@@ -82,7 +82,7 @@
       <v-col sm="3">
         <v-card elevation="4" outlined>
           <v-card-title>
-            People in the room
+            {{ $t('app.game.people_in_the_room') }}
           </v-card-title>
           <basic-mid-game-people-table :players="players" />
         </v-card>
@@ -90,7 +90,7 @@
       <v-col sm="3">
         <v-card elevation="4" outlined min-height="150px" max-height="250px" class="scroll">
           <v-card-title>
-            Console output
+            {{ $t('app.game.console_output') }}
             <v-spacer />
             <detailed-console-output-modal
               v-if="lastCodeRunResponse && lastCodeRunResponse.errorMessage"
@@ -106,7 +106,7 @@
       <v-col sm="4">
         <v-card elevation="4" outlined>
           <v-card-title>
-            Test Cases
+            {{ $t('app.game.test_cases') }}
             <v-spacer />
             <detailed-test-cases-modal
               :test-cases="challenge.challengeTests"
@@ -137,7 +137,7 @@
                 <v-icon left>
                   mdi-play
                 </v-icon>
-                Try Testcase
+                {{ $t('app.game.try_testcase') }}
               </v-btn>
             </template>
           </v-data-table>
@@ -146,7 +146,7 @@
       <v-col sm="2">
         <v-card elevation="4" outlined>
           <v-card-title>
-            Actions
+            {{ $t('general.actions') }}
           </v-card-title>
           <v-card-actions>
             <v-row justify="center">
@@ -155,7 +155,7 @@
                   color="primary"
                   @click="goToResults"
                 >
-                  Go to results
+                  {{ $t('app.game.go_to_results') }}
                 </v-btn>
               </v-col>
               <v-col v-else sm="12">
@@ -169,7 +169,7 @@
                   <v-icon left>
                     mdi-play
                   </v-icon>
-                  Run all
+                  {{ $t('app.game.run_all') }}
                 </v-btn>
 
                 <v-dialog
@@ -191,15 +191,15 @@
                       <v-icon left>
                         mdi-checkbox-marked-circle-outline
                       </v-icon>
-                      Submit
+                      {{ $t('general.submit') }}
                     </v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
-                      Confirm submitting
+                      {{ $t('app.game.submit_dialog.title') }}
                     </v-card-title>
                     <v-card-text>
-                      Do you really want to submit your solution? You won't be able change it later!
+                      {{ $t('app.game.submit_dialog.text') }}
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -207,7 +207,7 @@
                         color="secondary"
                         @click="submitDialogOpen = false"
                       >
-                        Cancel
+                        {{ $t('general.cancel') }}
                       </v-btn>
                       <v-btn
                         right
@@ -219,7 +219,7 @@
                         <v-icon left>
                           mdi-checkbox-marked-circle-outline
                         </v-icon>
-                        Submit
+                        {{ $t('general.submit') }}
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -313,10 +313,8 @@ export default {
     }
   },
   created() {
-    this.$store.subscribe((mutation, state) => {
+    this.$store.subscribe((mutation) => {
       if (mutation.type === 'main/setCodeRunResponse') {
-        const response = state.main.codeRunResponse;
-        console.log(response);
         if (mutation.payload != null) {
           this.canSendExecuteCode = true;
         }

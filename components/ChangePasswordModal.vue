@@ -9,14 +9,14 @@
 
     <v-card>
       <v-card-title>
-        Password change
+        {{ $t('app.profile.password_change_modal.title') }}
       </v-card-title>
 
       <validation-observer ref="observer" v-slot="{ invalid }">
         <v-card-text>
           <validation-provider
             v-slot="{ errors }"
-            name="Old password"
+            :name="$t('app.profile.password_change_modal.form.old_password')"
             rules="required"
             vid="oldPw"
           >
@@ -25,15 +25,15 @@
               :error-messages="errors"
               :append-icon="showOldPw ? 'mdi-eye' : 'mdi-eye-off'"
               :type="showOldPw ? 'text' : 'password'"
-              hint="Your current password"
-              label="Current Password"
+              :hint="$t('app.profile.password_change_modal.form.old_password_hint')"
+              :label="$t('app.profile.password_change_modal.form.old_password')"
               required
               @click:append="showOldPw = !showOldPw"
             />
           </validation-provider>
           <ValidationProvider
             v-slot="{errors}"
-            name="New password"
+            :name="$t('app.profile.password_change_modal.form.new_password')"
             rules="required|password:@confirm|min:6|max:50|newPassword:@oldPw"
           >
             <v-text-field
@@ -43,7 +43,7 @@
               :type="showPw ? 'text' : 'password'"
               :hint="$t('app.registration.form.password_hint')"
               required
-              label="New Password"
+              :label="$t('app.profile.password_change_modal.form.new_password')"
               @click:append="showPw = !showPw"
             />
           </ValidationProvider>
@@ -59,7 +59,7 @@
               :append-icon="showPwC ? 'mdi-eye' : 'mdi-eye-off'"
               :type="showPwC ? 'text' : 'password'"
               required
-              label="Confirm New Password"
+              :label="$t('app.registration.form.confirm_password')"
               @click:append="showPwC = !showPwC"
             />
           </ValidationProvider>
@@ -68,10 +68,10 @@
         <v-card-actions>
           <v-spacer />
           <v-btn class="elevation-10" @click="open = false">
-            cancel
+            {{ $t('general.cancel') }}
           </v-btn>
           <v-btn :disabled="invalid" color="secondary" @click="sendChangePassword">
-            Change password
+            {{ $t('app.profile.change_password') }}
           </v-btn>
         </v-card-actions>
       </validation-observer>

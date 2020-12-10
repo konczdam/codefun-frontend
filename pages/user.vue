@@ -3,7 +3,7 @@
     <v-col sm="6">
       <v-card elevation="10">
         <v-card-title>
-          Profile
+          {{ $t('app.profile.title') }}
         </v-card-title>
         <v-card-text>
           <v-text-field
@@ -36,7 +36,7 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                Change password
+                {{ $t('app.profile.change_password') }}
               </v-btn>
             </template>
           </change-password-modal>

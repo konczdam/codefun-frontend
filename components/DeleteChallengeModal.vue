@@ -5,10 +5,10 @@
   >
     <v-card>
       <v-card-title>
-        Delete Challenge
+        {{ $t('app.challenges.delete_challenge_modal.title') }}
       </v-card-title>
       <v-card-text>
-        Dou you really wanna delete this challenge?
+        {{ $t('app.challenges.delete_challenge_modal.text') }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -16,13 +16,13 @@
           color="blue lighten-3"
           @click="open = false"
         >
-          Cancel
+          {{ $t('general.cancel') }}
         </v-btn>
         <v-btn
           color="error"
           @click="sendConfirm"
         >
-          Yes
+          {{ $t('general.yes') }}
         </v-btn>
       </v-card-actions>
     </v-card>

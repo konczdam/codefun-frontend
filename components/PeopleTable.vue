@@ -8,7 +8,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search By User name"
+            :label="$t('app.friends.tabs.search_text')"
             single-line
             hide-details
             @keyup.enter="searchByName"

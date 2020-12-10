@@ -7,10 +7,10 @@
     :items="players"
     :headers="peopleTableHeaders"
   >
-    <template v-slot:top>
+    <template v-if="showTop" v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>
-          Results
+          {{ $t('app.results.title') }}
         </v-toolbar-title>
         <v-divider
           class="mx-4"
@@ -27,13 +27,13 @@
       {{ item.username }}
     </template>
     <template #item.status="{item}">
-      {{ item.status || 'coding...' }}
+      {{ item.status || $t('app.results.coding') }}
     </template>
 
     <template v-if="showRemainingTime" v-slot:footer>
       <timer class="ml-3">
         <template v-slot:default="slotProps">
-          Remaining time: {{ slotProps.min }}:{{ slotProps.sec }}
+          {{ $t('app.game.remaining_time') }}: {{ slotProps.min }}:{{ slotProps.sec }}
         </template>
       </timer>
     </template>
@@ -54,6 +54,11 @@ export default {
       default: () => [],
     },
     showRemainingTime: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    showTop: {
       type: Boolean,
       required: false,
       default: false,

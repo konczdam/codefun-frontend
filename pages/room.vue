@@ -3,7 +3,7 @@
     <v-col sm="7">
       <v-card class="elevation-10">
         <v-card-title style="margin-left: 12px">
-          Room
+          {{ $t('app.room.title') }}
           <v-spacer />
           <v-switch
             v-if="isOwner"
@@ -24,7 +24,7 @@
           @leave-room="leaveRoom"
         />
         <v-card-subtitle style="margin-left: 12px" class="font-weight-bold">
-          Chat
+          {{ $t('app.room.chat') }}
         </v-card-subtitle>
         <v-card-text>
           <div ref="chatContainer" class="chat-container">
@@ -39,7 +39,7 @@
     <v-col sm="3">
       <v-card class="mr-5 elevation-10">
         <v-card-title>
-          People in the room
+          {{ $t('app.room.people_in_the_room') }}
         </v-card-title>
         <v-list>
           <v-list-item
@@ -138,9 +138,6 @@ export default {
     },
     startGame() {
       this.startGameAction();
-    },
-    sendFriendsOnly(friendsOnly) {
-      console.log(friendsOnly);
     },
   },
 };

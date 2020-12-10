@@ -77,7 +77,7 @@ export const actions = {
       commit('setUserData', response.data);
     } else {
       this.$notifier.showMessage({
-        content: 'Failed to fetch user data from server!',
+        content: this.app.i18n.t('app.snackbar.error_fetching_user_data'),
         color: 'error',
       });
     }
@@ -87,7 +87,7 @@ export const actions = {
       const response = await this.$axios.post('/users/changePassword', passwordChangeData);
       if (response.status === StatusCodes.OK) {
         this.$notifier.showMessage({
-          content: 'Password successfully changed',
+          content: this.app.i18n.t('app.snackbar.password_change_success'),
           color: 'success',
         });
         return true;
@@ -99,7 +99,7 @@ export const actions = {
       }
     } catch (e) {
       this.$notifier.showMessage({
-        content: 'The provided current password is incorrect.',
+        content: this.app.i18n.t('app.snackbar.current_password_incorrect'),
         color: 'error',
       });
     }
@@ -120,7 +120,10 @@ export const actions = {
       commit('setOtherUsers', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
     } else {
-      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.error_fetching_data'),
+        color: 'error'
+      });
     }
   },
 
@@ -138,7 +141,10 @@ export const actions = {
       commit('setOtherUsers', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
     } else {
-      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.error_fetching_data'),
+        color: 'error'
+      });
     }
   },
 
@@ -156,9 +162,15 @@ export const actions = {
     };
     const response = await this.$axios.post('/friendship/addRequest', requestData);
     if (response.status === StatusCodes.OK) {
-      console.log('yay');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.friend_request_success'),
+        color: 'success',
+      });
     } else {
-      console.log('error');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.friend_request_error'),
+        color: 'error',
+      });
     }
   },
 
@@ -169,9 +181,15 @@ export const actions = {
     };
     const response = await this.$axios.post('/friendship/rejectRequest', requestData);
     if (response.status === StatusCodes.OK) {
-      console.log('yay');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.request_reject_success'),
+        color: 'success',
+      });
     } else {
-      console.log('error');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.request_reject_error'),
+        color: 'error',
+      });
     }
   },
 
@@ -189,7 +207,10 @@ export const actions = {
       commit('setOtherUsers', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
     } else {
-      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.error_fetching_data'),
+        color: 'error'
+      });
     }
   },
 
@@ -198,12 +219,17 @@ export const actions = {
       receiverId: this.$auth.user.id,
       requesterId,
     };
-    console.log({ requestData });
     const response = await this.$axios.post('/friendship/cancelRequest', requestData);
     if (response.status === StatusCodes.OK) {
-      console.log('yay');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.cancel_request_success'),
+        color: 'success',
+      });
     } else {
-      console.log('error');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.cancel_request_error'),
+        color: 'error',
+      });
     }
   },
 
@@ -214,9 +240,15 @@ export const actions = {
     };
     const response = await this.$axios.post('/friendship/acceptRequest', requestData);
     if (response.status === StatusCodes.OK) {
-      console.log('yay');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.accept_request_success'),
+        color: 'success',
+      });
     } else {
-      console.log('error');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.accept_request_error'),
+        color: 'error',
+      });
     }
   },
 
@@ -234,7 +266,10 @@ export const actions = {
       commit('setOtherUsers', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
     } else {
-      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.error_fetching_data'),
+        color: 'error'
+      });
     }
   },
 
@@ -245,9 +280,15 @@ export const actions = {
     };
     const response = await this.$axios.post('/friendship/removeFriend', requestData);
     if (response.status === StatusCodes.OK) {
-      console.log('yay');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.friend_remove_success'),
+        color: 'success',
+      });
     } else {
-      console.log('error');
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.friend_remove_error'),
+        color: 'error',
+      });
     }
   },
 

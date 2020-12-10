@@ -52,7 +52,10 @@ export const actions = {
       commit('setChallenges', response.data.content);
       commit('setServerItemsLength', response.data.totalElements);
     } else {
-      this.$notifier.showMessage({ content: 'there was an error fetching the data', color: 'error' });
+      this.$notifier.showMessage({
+        content: this.app.i18n.t('app.snackbar.error_fetching_challenges'),
+        color: 'error'
+      });
     }
   },
 

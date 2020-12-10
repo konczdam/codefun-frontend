@@ -12,7 +12,7 @@
         <v-icon left>
           mdi-eye
         </v-icon>
-        Check code
+        {{ $t('app.results.check_code') }}
       </v-btn>
     </template>
     <v-card>

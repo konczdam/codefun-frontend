@@ -9,7 +9,9 @@
           mdi-format-list-bulleted
         </v-icon>
       </template>
-      <span> tooltip </span>
+      <span>
+        {{ $t('app.game.test_cases_tooltip') }}
+      </span>
     </v-tooltip>
     <v-dialog
       v-model="modalOpen"
