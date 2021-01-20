@@ -14,7 +14,7 @@
     "@nuxtjs/auth": "^4.9.1",
     "@nuxtjs/axios": "^5.12.2",
     "codemirror": "^5.58.1",
-    "core-js": "^3.6.5",
+    "core-js": "^3.8.3",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",
     "nuxt": "^2.14.5",
